@@ -153,6 +153,7 @@ h1{text-align:center;font-size:21px;color:#ffd700;text-shadow:0 0 18px rgba(255,
 }
 
 #clash-overlay{position:fixed;inset:0;display:none;align-items:center;justify-content:center;z-index:350;pointer-events:none}
+#clash-overlay.active{pointer-events:auto}
 .clash-box{background:linear-gradient(135deg,rgba(5,5,25,.96),rgba(15,15,45,.96));border:2px solid #ffd700;border-radius:14px;padding:14px 24px;display:flex;align-items:center;gap:20px;box-shadow:0 0 40px rgba(255,215,0,.35);animation:clashPop .22s ease-out}
 @keyframes clashPop{from{transform:scale(.5);opacity:0}to{transform:scale(1);opacity:1}}
 .clash-side{text-align:center;font-size:12px;color:rgba(255,255,255,.75);max-width:130px;line-height:1.5}
@@ -209,7 +210,7 @@ h1{text-align:center;font-size:21px;color:#ffd700;text-shadow:0 0 18px rgba(255,
   <button class="btn bpu" id="b-bals" onclick="doBals()" disabled>⚡ バルス！</button>
   <button class="btn bgy" id="b-end" onclick="endTurn()" disabled>エンドだ</button>
   <button class="btn bgy" id="b-cancel" onclick="cancelUI()" disabled>キャンセル</button>
-  <button class="btn bte" id="b-clashmode" onclick="toggleClashMode()">⏱ 自動</button>
+  <button class="btn bte" id="b-clashmode" onclick="toggleClashMode()">演出: 自動</button>
   <button class="btn bgr" id="b-start" onclick="initGame()">ゲーム開始</button>
 </div>
 
@@ -256,10 +257,11 @@ let clashResolve=null;
 
 function toggleClashMode(){
   clashMode=clashMode==='auto'?'manual':'auto';
-  $('b-clashmode').textContent=clashMode==='auto'?'⏱ 自動':'👆 手動';
+  $('b-clashmode').textContent=clashMode==='auto'?'演出: 自動':'演出: 手動';
 }
 function clashNext(){
-  $('clash-overlay').style.display='none';
+  const ov=$('clash-overlay');
+  ov.style.display='none';ov.classList.remove('active');
   const r=clashResolve;clashResolve=null;
   if(r)r();
 }
@@ -270,8 +272,8 @@ function showClash(leftLabel,leftName,rightLabel,rightName){
     const btn=clashMode==='manual'?'<button class="clash-ok" onclick="clashNext()">OK</button>':'';
     ov.innerHTML=`<div class="clash-box" style="flex-direction:column;gap:14px"><div style="display:flex;align-items:center;gap:20px"><div class="clash-side"><div>${leftLabel}</div><div class="clash-cn">${leftName}</div></div><div class="clash-vs">⚔</div><div class="clash-side"><div>${rightLabel}</div><div class="clash-cn">${rightName}</div></div></div>${btn}</div>`;
     ov.style.display='flex';
-    if(clashMode==='manual'){clashResolve=resolve;}
-    else{setTimeout(()=>{ov.style.display='none';resolve();},1800);}
+    if(clashMode==='manual'){ov.classList.add('active');clashResolve=resolve;}
+    else{ov.classList.remove('active');setTimeout(()=>{ov.style.display='none';resolve();},1800);}
   });
 }
 function showEffectNotice(html){
@@ -280,8 +282,8 @@ function showEffectNotice(html){
     const btn=clashMode==='manual'?'<button class="clash-ok" onclick="clashNext()">OK</button>':'';
     ov.innerHTML=`<div class="clash-box" style="${btn?'flex-direction:column;gap:12px':''}"><div class="clash-notice">${html}</div>${btn}</div>`;
     ov.style.display='flex';
-    if(clashMode==='manual'){clashResolve=resolve;}
-    else{setTimeout(()=>{ov.style.display='none';resolve();},1400);}
+    if(clashMode==='manual'){ov.classList.add('active');clashResolve=resolve;}
+    else{ov.classList.remove('active');setTimeout(()=>{ov.style.display='none';resolve();},1400);}
   });
 }
 
@@ -491,7 +493,7 @@ function trapChoice(activate){
 }
 
 // ===== BATTLE TRAP =====
-function checkTrap(trapOwner,atkWho,atkIdx){
+function checkTrap(trapOwner,atkWho,atkIdx,instrText='🛡 CPUが攻撃！トラップを発動しますか？'){
   return new Promise(async resolve=>{
     const p=G[trapOwner];
     const attacker=G[atkWho].mons[atkIdx];
@@ -509,7 +511,7 @@ function checkTrap(trapOwner,atkWho,atkIdx){
       showTrapPanel(
         tIdxs,
         '🛡 トラップを発動しますか？',
-        '🛡 CPUが攻撃！トラップを発動しますか？',
+        instrText,
         async(ti)=>resolve(await executeBattleTrap('player',ti,atkWho,atkIdx)),
         ()=>resolve(false)
       );
@@ -888,8 +890,8 @@ async function cpuBattle(){
 
     const plMons=G.player.mons.map((pm,pi)=>pm?{pm,pi}:null).filter(x=>x);
     if(plMons.length===0){
-      log('cp','CPUのダイレクトアタック！');
-      const ts=await checkTrap('player','cpu',i);
+      log('cp','CPU: '+cdesc(m)+' がダイレクトアタック宣言！');render();
+      const ts=await checkTrap('player','cpu',i,`🛡 CPU ${cdesc(m)} がダイレクトアタック！トラップを発動しますか？`);
       if(!G.over&&G.cpu.mons[i]&&!ts){
         await showClash('CPUのモンスター',cdesc(m),'プレイヤー ライフ','LP '+G.player.lp);
         showFX('atk');
@@ -897,13 +899,15 @@ async function cpuBattle(){
         render();
       }
     }else{
-      const ts=await checkTrap('player','cpu',i);
+      const atkTargets=plMons.filter(x=>x.pm.mode==='attack');
+      let target;
+      if(atkTargets.length>0){atkTargets.sort((a,b)=>a.pm.value-b.pm.value);target=atkTargets[0];}
+      else{plMons.sort((a,b)=>a.pm.value-b.pm.value);target=plMons[0];}
+      const tname=target.pm.faceDown?'伏せモンスター':cdesc(target.pm);
+      log('cp','CPU: '+cdesc(m)+' が '+tname+' に攻撃宣言！');render();
+      const ts=await checkTrap('player','cpu',i,`🛡 CPU ${cdesc(m)} が ${tname} に攻撃！トラップを発動しますか？`);
       if(G.over)break;
       if(G.cpu.mons[i]&&!ts){
-        const atkTargets=plMons.filter(x=>x.pm.mode==='attack');
-        let target;
-        if(atkTargets.length>0){atkTargets.sort((a,b)=>a.pm.value-b.pm.value);target=atkTargets[0];}
-        else{plMons.sort((a,b)=>a.pm.value-b.pm.value);target=plMons[0];}
         await battle('cpu',i,'player',target.pi);
         render();
       }
