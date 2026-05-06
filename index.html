@@ -599,6 +599,13 @@ async function doMagicCard(who,card,targetIdx){
   showFX('magic');
   log(who==='player'?'pl':'cp',cdesc(card)+' 発動！');
 
+  // CPU魔法：対象宣言フェーズを表示
+  if(who==='cpu'&&targetIdx!==undefined){
+    const tm=G[opp].mons[targetIdx];
+    const tname=tm?(tm.faceDown?'伏せモンスター':cdesc(tm)):'?';
+    await showClash('CPUの魔法',cdesc(card),'ターゲット',tname);
+  }
+
   for(let i=0;i<5;i++){
     if(G.over)break;
     const m=G[opp].mons[i];
@@ -612,7 +619,10 @@ async function doMagicCard(who,card,targetIdx){
       await showEffectNotice('✨ '+cdesc(m)+'の効果！<br><span style="color:#a5d6a7">魔法効果を無効化！</span>');
       log('sy','11のモンスターは魔法を無効化！ 破壊されない');continue;
     }
-    if(m.value>card.value){log('sy',cdesc(m)+' はATKが高く破壊できなかった（フリップのみ）');continue;}
+    if(m.value>card.value){
+      await showClash('CPUの魔法',cdesc(card),'ATK不足・破壊不可',cdesc(m));
+      log('sy',cdesc(m)+' はATKが高く破壊できなかった（フリップのみ）');continue;
+    }
 
     // Check for magic counter trap
     const ctrTraps=getMagicCounterTraps(opp,card.value);
