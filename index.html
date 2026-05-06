@@ -73,6 +73,7 @@ h1{text-align:center;font-size:21px;color:#ffd700;text-shadow:0 0 18px rgba(255,
 #hand-hint{font-size:11px;color:rgba(255,220,100,.62);text-align:center;padding:3px}
 
 #action-panel{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;padding:8px;background:linear-gradient(135deg,rgba(0,0,0,.5),rgba(8,8,18,.5));border-radius:10px;margin:4px 0;align-items:center;border:1px solid rgba(255,255,255,.04)}
+#start-panel{text-align:center;padding:8px 0 4px;border-top:1px solid rgba(255,215,0,.15);margin-top:4px}
 .btn{padding:7px 14px;border:none;border-radius:7px;cursor:pointer;font-size:12px;font-weight:bold;transition:all .15s;position:relative;overflow:hidden}
 .btn::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(255,255,255,.1),transparent);pointer-events:none}
 .btn:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 4px 14px rgba(0,0,0,.4)}
@@ -169,8 +170,8 @@ h1{text-align:center;font-size:21px;color:#ffd700;text-shadow:0 0 18px rgba(255,
 <h1>♠ トランプカードゲーム ♥</h1>
 
 <div class="info-bar">
-  <span>CPU ライフ: <span class="lp" id="cpu-lp">40</span></span>
-  <span class="toshio-cnt">⚡ <span id="cpu-toshio">0</span>/3</span>
+  <span>CPU ライフ: <span class="lp" id="cpu-lp">50</span></span>
+  <span class="toshio-cnt">としおF: <span id="cpu-toshio">0</span>/3</span>
   <span>手札: <span id="cpu-hc">0</span>枚</span>
   <span>スキップ: <span id="cpu-skip">0</span>回</span>
 </div>
@@ -197,8 +198,8 @@ h1{text-align:center;font-size:21px;color:#ffd700;text-shadow:0 0 18px rgba(255,
 <div id="hand-hint">タップ: 攻撃表示で選択 ／ 同じカードを再タップ: 守備表示に切替 → ゾーンをタップして配置　※右クリックでも守備選択可　※フィールドのモンスターをタップで表示変更</div>
 
 <div class="info-bar">
-  <span>プレイヤー ライフ: <span class="lp" id="pl-lp">40</span></span>
-  <span class="toshio-cnt">⚡ <span id="pl-toshio">0</span>/3</span>
+  <span>プレイヤー ライフ: <span class="lp" id="pl-lp">50</span></span>
+  <span class="toshio-cnt">としおF: <span id="pl-toshio">0</span>/3</span>
   <span>スキップ: <span id="pl-skip">0</span>回</span>
 </div>
 
@@ -211,10 +212,13 @@ h1{text-align:center;font-size:21px;color:#ffd700;text-shadow:0 0 18px rgba(255,
   <button class="btn bgy" id="b-end" onclick="endTurn()" disabled>エンドだ</button>
   <button class="btn bgy" id="b-cancel" onclick="cancelUI()" disabled>キャンセル</button>
   <button class="btn bte" id="b-clashmode" onclick="toggleClashMode()">演出: 自動</button>
-  <button class="btn bgr" id="b-start" onclick="initGame()">ゲーム開始</button>
 </div>
 
 <div id="game-log"><div class="le lsy">ゲーム開始ボタンをクリックしてください</div></div>
+
+<div id="start-panel">
+  <button class="btn bgr" id="b-start" onclick="initGame()">ゲーム開始</button>
+</div>
 </div>
 
 <div id="trap-panel">
@@ -288,7 +292,7 @@ function showEffectNotice(html){
 }
 
 function mkPlayer(){
-  return{hand:[],mons:Array(5).fill(null),traps:Array(5).fill(null),lp:40,toshio:0,toshioTotal:0,skip:0};
+  return{hand:[],mons:Array(5).fill(null),traps:Array(5).fill(null),lp:50,toshio:0,toshioTotal:0,skip:0};
 }
 function mkDeck(){
   const d=[];let id=0;
@@ -577,7 +581,8 @@ function doSummonCard(who,zoneIdx,card,mode,tributeSummon=false){
   const p=G[who];
   const hi=p.hand.indexOf(card);if(hi<0)return;
   p.hand.splice(hi,1);
-  p.mons[zoneIdx]={...card,mode,faceDown:mode==='defense',newSummon:!tributeSummon,usedAtk:false};
+  const isFirstTurn=(who==='player'&&G.turnNum===1)||(who==='cpu'&&G.turnNum===2);
+  p.mons[zoneIdx]={...card,mode,faceDown:mode==='defense',newSummon:!tributeSummon&&isFirstTurn,usedAtk:false};
   log(who==='player'?'pl':'cp',
     (who==='player'?'プレイヤー':'CPU')+'が '+cdesc(card)+' を'+(mode==='attack'?'攻撃表示で召喚':'守備表示でセット')+(tributeSummon?' (生贄召喚・即攻撃可)':''));
   if(who==='player'){resetUI();render();}
@@ -789,8 +794,8 @@ async function clickCpuField(){
     log('pl',cdesc(attacker)+' がダイレクトアタック！');
     showFX('atk');
     damage('cpu',attacker.value);
-    if(G.player.mons[UI.atkIdx])G.player.mons[UI.atkIdx].usedAtk=true;
   }
+  if(G.player.mons[UI.atkIdx])G.player.mons[UI.atkIdx].usedAtk=true;
   resetUI();render();
 }
 
