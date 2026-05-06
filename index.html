@@ -1,0 +1,1033 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>トランプカードゲーム</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:radial-gradient(ellipse at center,#0a1f0a,#030803);color:#e8e8e8;font-family:'Segoe UI',Arial,sans-serif;min-height:100vh;overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(255,215,0,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(255,215,0,.025) 1px,transparent 1px);background-size:44px 44px;pointer-events:none;z-index:0}
+#wrap{max-width:940px;margin:0 auto;padding:8px;position:relative;z-index:1}
+h1{text-align:center;font-size:21px;color:#ffd700;text-shadow:0 0 18px rgba(255,215,0,.55),0 0 40px rgba(255,215,0,.2);padding:7px;letter-spacing:3px}
+
+.info-bar{display:flex;justify-content:space-around;align-items:center;padding:7px 12px;background:linear-gradient(135deg,rgba(0,0,0,.8),rgba(8,16,36,.8));border-radius:10px;margin:4px 0;border:1px solid rgba(255,215,0,.22);font-size:13px;flex-wrap:wrap;gap:6px;box-shadow:0 2px 10px rgba(0,0,0,.5),inset 0 1px 0 rgba(255,255,255,.04)}
+.lp{font-size:21px;font-weight:bold;color:#4fc3f7;text-shadow:0 0 10px rgba(79,195,247,.35)}
+.toshio-cnt{color:#ff7043;font-weight:bold}
+
+.field-row{display:flex;gap:6px;justify-content:center;align-items:center;padding:5px 6px;min-height:120px}
+.row-label{writing-mode:vertical-rl;font-size:10px;color:rgba(255,255,255,.22);letter-spacing:2px;padding:0 2px;flex-shrink:0}
+
+.czone{width:78px;height:110px;border:2px dashed rgba(255,255,255,.1);border-radius:10px;display:flex;align-items:center;justify-content:center;position:relative;flex-shrink:0;transition:all .22s}
+.czone.mzone{border-color:rgba(80,160,80,.28);background:rgba(80,160,80,.04)}
+.czone.tzone{border-color:rgba(160,80,80,.22);background:rgba(160,80,80,.03)}
+.czone.clickable{cursor:pointer}
+.czone.clickable:hover{border-color:#ffd700;box-shadow:0 0 18px rgba(255,215,0,.38),inset 0 0 10px rgba(255,215,0,.05)}
+.czone.direct-target{border-color:#ff4444;box-shadow:0 0 22px rgba(255,50,50,.6),inset 0 0 10px rgba(255,50,50,.08);cursor:pointer;animation:pulseRed 1s infinite}
+@keyframes pulseRed{0%,100%{box-shadow:0 0 22px rgba(255,50,50,.6)}50%{box-shadow:0 0 38px rgba(255,50,50,.95)}}
+
+.card{width:74px;height:106px;border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:5px 4px;cursor:pointer;position:relative;user-select:none;transition:transform .15s,box-shadow .15s;flex-shrink:0}
+.card.fu{background:linear-gradient(160deg,#fff,#f4f4ee)}
+.card.fu.hearts,.card.fu.spades{border:1.5px solid rgba(100,140,255,.38);box-shadow:0 2px 8px rgba(0,0,0,.38),inset 0 1px 0 rgba(255,255,255,.55)}
+.card.fu.clubs{border:1.5px solid rgba(100,220,140,.38);box-shadow:0 2px 8px rgba(0,0,0,.38),inset 0 1px 0 rgba(255,255,255,.55)}
+.card.fu.diamonds{border:1.5px solid rgba(255,160,80,.38);box-shadow:0 2px 8px rgba(0,0,0,.38),inset 0 1px 0 rgba(255,255,255,.55)}
+.card.fu.joker{border:1.5px solid rgba(200,100,255,.48);box-shadow:0 2px 8px rgba(0,0,0,.38),inset 0 1px 0 rgba(255,255,255,.55)}
+.card.fd{background:linear-gradient(135deg,#1a237e 0%,#311b92 30%,#4a148c 60%,#880e4f 100%);border:2px solid rgba(255,215,0,.58);justify-content:center;align-items:center;font-size:30px;box-shadow:0 3px 12px rgba(0,0,0,.6)}
+.card.fd::after{content:'🂠'}
+.card.hearts .cv,.card.hearts .cs,.card.hearts .cvb,.card.diamonds .cv,.card.diamonds .cs,.card.diamonds .cvb{color:#cc0000}
+.card.spades .cv,.card.spades .cs,.card.spades .cvb,.card.clubs .cv,.card.clubs .cs,.card.clubs .cvb{color:#111}
+.card.joker .cv,.card.joker .cs{color:#8800cc}
+.cv{font-size:14px;font-weight:bold;align-self:flex-start;line-height:1}
+.cs{font-size:25px;line-height:1}
+.cvb{font-size:14px;font-weight:bold;align-self:flex-end;transform:rotate(180deg);line-height:1}
+
+.card.fu:not(.defm):hover{transform:translateY(-5px);box-shadow:0 10px 22px rgba(0,0,0,.5)!important}
+.card.defm:hover{transform:rotate(90deg) translateY(-5px)}
+
+.card.sel-atk{box-shadow:0 0 0 3px #44aaff,0 0 24px rgba(68,170,255,.55)!important;transform:translateY(-10px);z-index:10}
+.card.sel-def{box-shadow:0 0 0 3px #aaffaa,0 0 24px rgba(100,255,100,.55)!important;transform:translateY(-10px);z-index:10}
+.card.defm{transform:rotate(90deg)}
+.card.defm.sel-atk{transform:rotate(90deg) translateY(-10px)}
+.card.trib-sel{box-shadow:0 0 0 3px #ff4444,0 0 18px rgba(255,50,50,.55)!important}
+.card.atk-sel{box-shadow:0 0 0 3px #44ff44,0 0 18px rgba(50,255,50,.55)!important;animation:atkPulse 1.2s ease-in-out infinite}
+@keyframes atkPulse{0%,100%{box-shadow:0 0 0 3px #44ff44,0 0 18px rgba(50,255,50,.55)}50%{box-shadow:0 0 0 3px #88ff88,0 0 32px rgba(50,255,50,.9)}}
+.card.magic-tgt{box-shadow:0 0 0 3px #ff8800,0 0 18px rgba(255,136,0,.55)!important;animation:magicTgtPulse 1s ease-in-out infinite;cursor:pointer}
+@keyframes magicTgtPulse{0%,100%{box-shadow:0 0 0 3px #ff8800,0 0 18px rgba(255,136,0,.55)}50%{box-shadow:0 0 0 3px #ffaa44,0 0 32px rgba(255,136,0,.9)}}
+
+.tlabel{position:absolute;top:2px;right:2px;font-size:8px;padding:1px 3px;border-radius:2px;background:rgba(0,0,0,.6);font-weight:bold}
+.lm{color:#4fc3f7}.lmag{color:#a5d6a7}.ltr{color:#ef9a9a}.ljk{color:#ce93d8}
+.mode-badge{position:absolute;bottom:2px;left:50%;transform:translateX(-50%);font-size:9px;padding:1px 4px;border-radius:3px;white-space:nowrap;font-weight:bold}
+.mode-atk{background:#1a3a8a;color:#88bbff}
+.mode-def{background:#1a5a1a;color:#88ff88}
+.atkbadge{position:absolute;bottom:-20px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.9);color:#ffd700;font-size:10px;padding:2px 6px;border-radius:4px;white-space:nowrap;pointer-events:none;z-index:5;border:1px solid rgba(255,215,0,.28)}
+.kouki-label{position:absolute;top:-26px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,#cc0000,#880000);color:#fff;font-size:11px;font-weight:bold;padding:3px 8px;border-radius:5px;white-space:nowrap;z-index:10;border:1px solid #ff6666;box-shadow:0 0 12px rgba(255,50,50,.5);animation:labelPop .25s ease-out}
+@keyframes labelPop{from{transform:translateX(-50%) scale(.6);opacity:0}to{transform:translateX(-50%) scale(1);opacity:1}}
+.ceff{position:absolute;bottom:17px;left:0;right:0;font-size:6px;text-align:center;line-height:1.2;padding:0 2px;pointer-events:none;font-weight:bold;color:rgba(60,60,180,.82)}
+
+#cpu-hand-area{display:flex;gap:4px;justify-content:center;padding:3px;min-height:44px}
+.cback{width:34px;height:50px;border-radius:5px;background:linear-gradient(135deg,#1a237e,#4a148c,#880e4f);border:1px solid rgba(255,215,0,.45);flex-shrink:0;box-shadow:0 2px 6px rgba(0,0,0,.5)}
+
+.divider{text-align:center;padding:5px;background:linear-gradient(90deg,transparent,rgba(255,215,0,.07),transparent);border-top:1px solid rgba(255,215,0,.18);border-bottom:1px solid rgba(255,215,0,.18);font-size:12px;color:rgba(255,215,0,.65);margin:3px 0}
+
+#player-hand-area{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;min-height:120px;padding:10px 7px;background:linear-gradient(135deg,rgba(0,0,50,.5),rgba(0,0,80,.28));border-radius:10px;border:1px solid rgba(100,100,255,.22);margin:4px 0;position:relative;box-shadow:inset 0 2px 10px rgba(0,0,0,.4)}
+#hand-hint{font-size:11px;color:rgba(255,220,100,.62);text-align:center;padding:3px}
+
+#action-panel{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;padding:8px;background:linear-gradient(135deg,rgba(0,0,0,.5),rgba(8,8,18,.5));border-radius:10px;margin:4px 0;align-items:center;border:1px solid rgba(255,255,255,.04)}
+.btn{padding:7px 14px;border:none;border-radius:7px;cursor:pointer;font-size:12px;font-weight:bold;transition:all .15s;position:relative;overflow:hidden}
+.btn::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(255,255,255,.1),transparent);pointer-events:none}
+.btn:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 4px 14px rgba(0,0,0,.4)}
+.btn:active:not(:disabled){transform:translateY(0)}
+.btn:disabled{opacity:.28;cursor:not-allowed;transform:none}
+.bbl{background:linear-gradient(135deg,#1565c0,#0d47a1);color:#fff;box-shadow:0 2px 8px rgba(21,101,192,.35)}
+.brd{background:linear-gradient(135deg,#c62828,#b71c1c);color:#fff;box-shadow:0 2px 8px rgba(198,40,40,.35)}
+.bgr{background:linear-gradient(135deg,#2e7d32,#1b5e20);color:#fff;box-shadow:0 2px 8px rgba(46,125,50,.35)}
+.bgo{background:linear-gradient(135deg,#e65100,#bf360c);color:#fff;box-shadow:0 2px 8px rgba(230,81,0,.35)}
+.bpu{background:linear-gradient(135deg,#6a1b9a,#4a148c);color:#fff;box-shadow:0 2px 8px rgba(106,27,154,.35)}
+.bgy{background:linear-gradient(135deg,#37474f,#263238);color:#fff;box-shadow:0 2px 8px rgba(55,71,79,.35)}
+.bte{background:linear-gradient(135deg,#00695c,#004d40);color:#fff;box-shadow:0 2px 8px rgba(0,105,92,.35)}
+
+#trap-panel{display:none;position:fixed;bottom:180px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,#0d0d2e,#1a1a3e);border:2px solid #ffd700;border-radius:14px;padding:16px 22px;z-index:200;text-align:center;min-width:300px;box-shadow:0 0 40px rgba(255,215,0,.28),inset 0 1px 0 rgba(255,255,255,.04)}
+#trap-panel h3{color:#ffd700;margin-bottom:10px;font-size:14px;text-shadow:0 0 10px rgba(255,215,0,.45)}
+#trap-panel-cards{display:flex;gap:8px;justify-content:center;margin-bottom:12px;flex-wrap:wrap}
+#trap-panel-btns{display:flex;gap:8px;justify-content:center}
+
+#phase-ind{text-align:center;font-size:12px;color:rgba(255,255,255,.45);padding:3px}
+#instr{font-size:12px;color:#ffdd99;text-align:center;padding:4px 10px;background:linear-gradient(90deg,transparent,rgba(255,200,0,.07),transparent);border-radius:4px;margin:2px 0;min-height:22px}
+
+#game-log{height:120px;overflow-y:auto;background:rgba(0,0,0,.68);padding:8px;border-radius:10px;font-size:11px;border:1px solid rgba(255,255,255,.07);margin-top:5px;box-shadow:inset 0 2px 8px rgba(0,0,0,.5)}
+.le{padding:2px 0;border-bottom:1px solid rgba(255,255,255,.04)}
+.lpl{color:#4fc3f7}.lcp{color:#ef9a9a}.lsy{color:#a5d6a7}.lsp{color:#ffd700}
+
+.dmg-float{position:fixed;font-size:28px;font-weight:bold;pointer-events:none;z-index:500;text-shadow:0 0 12px currentColor;animation:floatUp 1.2s ease-out forwards}
+@keyframes floatUp{0%{opacity:1;transform:translateY(0) scale(1)}60%{opacity:1;transform:translateY(-52px) scale(1.3)}100%{opacity:0;transform:translateY(-92px) scale(.8)}}
+
+.fx-overlay{position:fixed;inset:0;pointer-events:none;z-index:400}
+.fx-atk{animation:fxAtk .4s ease-out forwards}
+@keyframes fxAtk{0%{background:rgba(255,215,0,0)}35%{background:rgba(255,215,0,.13)}100%{background:rgba(255,215,0,0)}}
+.fx-magic{animation:fxMagic .55s ease-out forwards}
+@keyframes fxMagic{0%{background:rgba(100,0,255,0)}35%{background:rgba(100,0,255,.16)}100%{background:rgba(100,0,255,0)}}
+.fx-trap{animation:fxTrap .55s ease-out forwards}
+@keyframes fxTrap{0%{background:rgba(255,0,50,0)}35%{background:rgba(255,0,50,.18)}100%{background:rgba(255,0,50,0)}}
+
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-10px)}40%{transform:translateX(10px)}60%{transform:translateX(-6px)}80%{transform:translateX(6px)}}
+.shaking{animation:shake .35s ease-in-out}
+
+#overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.82);z-index:300;align-items:center;justify-content:center}
+#overlay.show{display:flex}
+#obox{background:linear-gradient(135deg,#0d0d2e,#1a1a3e);border:2px solid #ffd700;border-radius:14px;padding:32px;text-align:center;max-width:400px;box-shadow:0 0 50px rgba(255,215,0,.18)}
+#obox h2{color:#ffd700;margin-bottom:14px;font-size:24px;text-shadow:0 0 18px rgba(255,215,0,.45)}
+#obox p{margin-bottom:20px;font-size:15px;color:rgba(255,255,255,.82)}
+
+@keyframes tflash{0%{background:radial-gradient(ellipse at center,#0a1f0a,#030803)}33%{background:radial-gradient(ellipse at center,#5a5a00,#3a0000)}66%{background:radial-gradient(ellipse at center,#3a0055,#00003a)}100%{background:radial-gradient(ellipse at center,#0a1f0a,#030803)}}
+.flashing{animation:tflash .55s ease-in-out 3}
+
+.zone-card-wrap{position:relative;display:flex;align-items:center;justify-content:center;margin-bottom:20px}
+
+#clash-overlay{position:fixed;inset:0;display:none;align-items:center;justify-content:center;z-index:350;pointer-events:none}
+.clash-box{background:linear-gradient(135deg,rgba(5,5,25,.96),rgba(15,15,45,.96));border:2px solid #ffd700;border-radius:14px;padding:14px 24px;display:flex;align-items:center;gap:20px;box-shadow:0 0 40px rgba(255,215,0,.35);animation:clashPop .22s ease-out}
+@keyframes clashPop{from{transform:scale(.5);opacity:0}to{transform:scale(1);opacity:1}}
+.clash-side{text-align:center;font-size:12px;color:rgba(255,255,255,.75);max-width:130px;line-height:1.5}
+.clash-cn{font-size:15px;font-weight:bold;color:#ffd700;margin-top:3px}
+.clash-vs{color:#ff6644;font-size:26px;font-weight:bold;text-shadow:0 0 12px rgba(255,100,50,.7);flex-shrink:0}
+.clash-notice{font-size:15px;font-weight:bold;text-align:center;padding:4px 8px;line-height:1.6}
+</style>
+</head>
+<body>
+<div id="wrap">
+<h1>♠ トランプカードゲーム ♥</h1>
+
+<div class="info-bar">
+  <span>CPU ライフ: <span class="lp" id="cpu-lp">40</span></span>
+  <span class="toshio-cnt">⚡ <span id="cpu-toshio">0</span>/3</span>
+  <span>手札: <span id="cpu-hc">0</span>枚</span>
+  <span>スキップ: <span id="cpu-skip">0</span>回</span>
+</div>
+
+<div id="cpu-hand-area"></div>
+
+<div class="field-row" id="cpu-tzone" style="padding-bottom:2px">
+  <span class="row-label">TRAP</span>
+</div>
+<div class="field-row" id="cpu-mzone" style="padding-top:2px">
+  <span class="row-label">MON</span>
+</div>
+
+<div class="divider">🃏 山札: <span id="deck-cnt">54</span>枚 &nbsp;|&nbsp; 🗑️ 廃棄: <span id="grave-cnt">0</span>枚</div>
+
+<div class="field-row" id="pl-mzone" style="padding-bottom:2px">
+  <span class="row-label">MON</span>
+</div>
+<div class="field-row" id="pl-tzone" style="padding-top:2px">
+  <span class="row-label">TRAP</span>
+</div>
+
+<div id="player-hand-area"></div>
+<div id="hand-hint">← 左クリック: 攻撃表示 で選択 ／ 右クリック: 守備表示 で選択 → ゾーンをクリックして配置　※メインフェーズ中にフィールドのモンスターをクリックで表示変更</div>
+
+<div class="info-bar">
+  <span>プレイヤー ライフ: <span class="lp" id="pl-lp">40</span></span>
+  <span class="toshio-cnt">⚡ <span id="pl-toshio">0</span>/3</span>
+  <span>スキップ: <span id="pl-skip">0</span>回</span>
+</div>
+
+<div id="phase-ind">ターン: <span id="turn-ind">-</span> | フェーズ: <span id="phase-txt">-</span></div>
+<div id="instr">ゲームを開始してください</div>
+
+<div id="action-panel">
+  <button class="btn bgo" id="b-battle" onclick="goBattle()" disabled>⚔ 攻撃フェーズへ</button>
+  <button class="btn bpu" id="b-bals" onclick="doBals()" disabled>⚡ バルス！</button>
+  <button class="btn bgy" id="b-end" onclick="endTurn()" disabled>エンドだ</button>
+  <button class="btn bgy" id="b-cancel" onclick="cancelUI()" disabled>キャンセル</button>
+  <button class="btn bgr" id="b-start" onclick="initGame()">ゲーム開始</button>
+</div>
+
+<div id="game-log"><div class="le lsy">ゲーム開始ボタンをクリックしてください</div></div>
+</div>
+
+<div id="trap-panel">
+  <h3 id="trap-panel-title">🛡 トラップを発動しますか？</h3>
+  <div id="trap-panel-cards"></div>
+  <div id="trap-panel-btns">
+    <button class="btn brd" id="trap-yes-btn" onclick="trapChoice(true)">発動する</button>
+    <button class="btn bgy" onclick="trapChoice(false)">様子見だ</button>
+  </div>
+</div>
+
+<div id="overlay">
+  <div id="obox">
+    <h2 id="ot">ゲーム終了</h2>
+    <p id="om"></p>
+    <button class="btn bgr" onclick="initGame()">もう一度プレイ</button>
+  </div>
+</div>
+<div id="clash-overlay"></div>
+
+<script>
+const SUITS=['hearts','spades','clubs','diamonds'];
+const SYM={hearts:'♥',spades:'♠',clubs:'♣',diamonds:'♦',joker:'★'};
+const VN={1:'A',11:'J',12:'Q',13:'K'};
+const vn=v=>VN[v]||String(v);
+const ctype=s=>s==='hearts'||s==='spades'?'monster':s==='clubs'?'magic':s==='diamonds'?'trap':'joker';
+const tribN=v=>v>=11?2:v>=8?1:0;
+// 効果を追加する場合はここにエントリを加えるだけでOK
+const MON_EFFECTS={
+  1:{short:'⚡としおフラッシュ', desc:'破壊→攻撃者の裏カードを公開'},
+  8:{short:'🛡トラップ無効',    desc:'このモンスターへの攻撃時トラップ発動不可'},
+  11:{short:'✨魔法無効',       desc:'魔法カードの効果を受けない'}
+};
+
+let G=null;
+let UI={state:'idle',handIdx:-1,pendMode:'attack',pending:null,tribs:[],tribsNeed:0,atkIdx:-1};
+let trapCallback=null;
+
+function showClash(leftLabel,leftName,rightLabel,rightName,ms=1300){
+  return new Promise(resolve=>{
+    const ov=$('clash-overlay');
+    ov.innerHTML=`<div class="clash-box"><div class="clash-side"><div>${leftLabel}</div><div class="clash-cn">${leftName}</div></div><div class="clash-vs">⚔</div><div class="clash-side"><div>${rightLabel}</div><div class="clash-cn">${rightName}</div></div></div>`;
+    ov.style.display='flex';
+    setTimeout(()=>{ov.style.display='none';resolve();},ms);
+  });
+}
+function showEffectNotice(html,ms=1100){
+  return new Promise(resolve=>{
+    const ov=$('clash-overlay');
+    ov.innerHTML=`<div class="clash-box"><div class="clash-notice">${html}</div></div>`;
+    ov.style.display='flex';
+    setTimeout(()=>{ov.style.display='none';resolve();},ms);
+  });
+}
+
+function mkPlayer(){
+  return{hand:[],mons:Array(5).fill(null),traps:Array(5).fill(null),lp:40,toshio:0,toshioTotal:0,skip:0};
+}
+function mkDeck(){
+  const d=[];let id=0;
+  for(const s of SUITS)for(let v=1;v<=13;v++)d.push({id:id++,suit:s,value:v,type:ctype(s)});
+  d.push({id:id++,suit:'joker',value:0,type:'joker'});
+  d.push({id:id++,suit:'joker',value:0,type:'joker'});
+  return d;
+}
+function shuffle(a){const b=[...a];for(let i=b.length-1;i>0;i--){const j=0|Math.random()*(i+1);[b[i],b[j]]=[b[j],b[i]];}return b;}
+
+function initGame(){
+  $('overlay').classList.remove('show');
+  hideTrapPanel();
+  G={deck:shuffle(mkDeck()),grave:[],turn:'player',phase:'draw',player:mkPlayer(),cpu:mkPlayer(),over:false,turnNum:0};
+  resetUI();
+  for(let i=0;i<5;i++){drawTo('player');drawTo('cpu');}
+  clearLog();
+  log('sy','ゲーム開始！プレイヤーのターン（先行1ターン目は攻撃不可）');
+  render();
+  setTimeout(()=>startTurn('player'),100);
+}
+
+function drawTo(who){
+  if(G.deck.length===0){
+    if(G.grave.length===0){log('sy','山札・廃棄ともに空！');return null;}
+    G.deck=shuffle([...G.grave]);G.grave=[];
+    log('sy','廃棄をシャッフルして山札へ（'+G.deck.length+'枚）');
+  }
+  const c=G.deck.pop();
+  G[who].hand.push({...c,mode:'attack',faceDown:false,usedAtk:false,newSummon:false});
+  return c;
+}
+function toGrave(...cs){for(const c of cs)if(c)G.grave.push(c);}
+
+function startTurn(who){
+  if(G.over)return;
+  G.turn=who;G.turnNum++;
+  const p=G[who];
+  for(const m of p.mons)if(m){m.newSummon=false;m.usedAtk=false;}
+  if(p.skip>0){
+    p.skip--;
+    log('sp',(who==='player'?'プレイヤー':'CPU')+'はターンをスキップ！（残'+p.skip+'回）');
+    render();setTimeout(()=>doEndTurn(true),1200);return;
+  }
+  G.phase='draw';
+  const drawn=drawTo(who);
+  if(drawn)log(who==='player'?'pl':'cp',(who==='player'?'プレイヤー':'CPU')+'がドロー: '+cdesc(drawn));
+  render();
+  if(who==='cpu'){setTimeout(cpuMain,900);}
+  else{G.phase='main';render();setInstr('手札のカードを左/右クリックで選択してください');}
+}
+
+function endTurn(){if(G.over||G.turn!=='player')return;doEndTurn(false);}
+function doEndTurn(skip){
+  if(G.over)return;
+  if(!skip)log('pl','プレイヤーがターン終了');
+  G.phase='end';resetUI();render();
+  const nx=G.turn==='player'?'cpu':'player';
+  setTimeout(()=>startTurn(nx),400);
+}
+
+function cdesc(c){
+  if(!c)return'?';
+  if(c.type==='joker')return'ジョーカー★';
+  const tn={monster:'モンスター',magic:'魔法',trap:'トラップ'}[c.type]||'';
+  return SYM[c.suit]+vn(c.value)+'('+tn+(c.type==='monster'?'/ATK'+c.value:'')+')';
+}
+
+// ===== COMBAT CORE =====
+// flashTarget: who suffers としおフラッシュ (the attacker/destroyer, not the victim)
+function destroyMon(who,idx,reason,flashTarget){
+  const c=G[who].mons[idx];if(!c)return;
+  G[who].mons[idx]=null;toGrave(c);
+  log('sy',(who==='player'?'プレイヤー':'CPU')+'の '+cdesc(c)+' が破壊'+(reason?' ('+reason+')':''));
+  if(c.value===1){
+    // 攻撃した相手（flashTarget）がとしおフラッシュを食らう
+    const sufferer=flashTarget!==undefined?flashTarget:who;
+    toshioFlash(sufferer);
+  }
+}
+
+// sufferer: who gets their cards revealed and toshio count incremented
+function toshioFlash(sufferer){
+  const p=G[sufferer];
+  log('sp','⚡ としおフラッシュ！'+(sufferer==='player'?'プレイヤー':'CPU')+'の裏カードが全て表向きに！');
+  for(const m of p.mons)if(m&&m.mode==='defense'){m.faceDown=false;}
+  for(const t of p.traps)if(t){t.faceDown=false;t.revealed=true;}
+  document.body.classList.add('flashing');
+  setTimeout(()=>document.body.classList.remove('flashing'),1800);
+  p.toshio++;p.toshioTotal++;
+  log('sp',(sufferer==='player'?'プレイヤー':'CPU')+'のとしおカウント: '+p.toshio+'/3 (累計'+p.toshioTotal+')');
+  if(p.toshio>=3){
+    p.toshio=0;p.skip+=1;
+    log('sp','3回達成！'+(sufferer==='player'?'プレイヤー':'CPU')+'は次のターンをスキップ！');
+    if(p.toshioTotal>=9){
+      log('sp',(sufferer==='player'?'プレイヤー':'CPU')+'はとしおフラッシュ累積により最終敗北！！');
+      gameOver(sufferer==='player'?'cpu':'player');
+    }
+  }
+}
+
+function damage(who,amt){
+  if(amt<=0)return;
+  const lpEl=$(who==='player'?'pl-lp':'cpu-lp');
+  const rect=lpEl.getBoundingClientRect();
+  G[who].lp=Math.max(0,G[who].lp-amt);
+  log('sy',(who==='player'?'プレイヤー':'CPU')+'に '+amt+' ダメージ！ (残LP: '+G[who].lp+')');
+  showFloat('-'+amt,'#ff4444',rect.left+rect.width/2,rect.top);
+  const w=$('wrap');w.classList.remove('shaking');void w.offsetWidth;w.classList.add('shaking');
+  setTimeout(()=>w.classList.remove('shaking'),400);
+  if(G[who].lp<=0)gameOver(who==='player'?'cpu':'player');
+}
+
+function showFloat(text,color,x,y){
+  const d=document.createElement('div');
+  d.className='dmg-float';d.textContent=text;d.style.color=color;
+  d.style.left=x+'px';d.style.top=y+'px';
+  document.body.appendChild(d);
+  setTimeout(()=>d.remove(),1300);
+}
+
+function showFX(type){
+  const d=document.createElement('div');
+  d.className='fx-overlay fx-'+type;
+  document.body.appendChild(d);
+  setTimeout(()=>d.remove(),600);
+}
+
+function gameOver(winner){
+  if(G.over)return;G.over=true;
+  hideTrapPanel();trapCallback=null;
+  const pw=winner==='player';
+  $('ot').textContent=pw?'🎉 プレイヤーの勝利！':'💀 CPUの勝利...';
+  $('om').textContent=pw?'おめでとうございます！CPUに勝ちました！':'残念... もう一度挑戦しましょう！';
+  $('overlay').classList.add('show');
+  log('sp',(pw?'プレイヤー':'CPU')+'の勝利！');render();
+}
+
+async function battle(aWho,aIdx,dWho,dIdx){
+  const ac=G[aWho].mons[aIdx];const dc=G[dWho].mons[dIdx];
+  if(!ac||!dc)return;
+  const aAtk=ac.value,dAtk=dc.value,isDef=dc.mode==='defense';
+  await showClash(
+    (aWho==='player'?'プレイヤー':'CPU')+'のモンスター', cdesc(ac),
+    (dWho==='player'?'プレイヤー':'CPU')+'のモンスター'+(isDef?' [守備]':''), cdesc(dc)
+  );
+  log('sy','⚔ '+cdesc(ac)+' vs '+cdesc(dc)+(isDef?' [守備]':''));
+  showFX('atk');
+  if(isDef){
+    if(aAtk>dAtk){destroyMon(dWho,dIdx,'攻撃',aWho);}
+    else if(aAtk<dAtk){damage(aWho,dAtk-aAtk);}
+    else log('sy','引き分け — 変化なし');
+  }else{
+    if(aAtk>dAtk){destroyMon(dWho,dIdx,'攻撃',aWho);damage(dWho,aAtk-dAtk);}
+    else if(aAtk<dAtk){destroyMon(aWho,aIdx,'反撃',dWho);damage(aWho,dAtk-aAtk);}
+    else{destroyMon(aWho,aIdx,'相打ち',dWho);destroyMon(dWho,dIdx,'相打ち',aWho);}
+  }
+}
+
+// ===== TRAP PANEL (generic) =====
+function showTrapPanel(tIdxs,title,instrText,onActivate,onDecline){
+  const cards=$('trap-panel-cards');cards.innerHTML='';
+  for(const ti of tIdxs){
+    const t=G.player.traps[ti];if(!t)continue;
+    const wrap=document.createElement('div');wrap.style.textAlign='center';
+    const d=mkCardEl(t,false);d.style.cursor='default';
+    const lbl=document.createElement('div');lbl.style.fontSize='10px';lbl.style.color='#ffdd99';lbl.textContent='ゾーン'+(ti+1);
+    wrap.appendChild(d);wrap.appendChild(lbl);
+    d.setAttribute('data-tidx',ti);
+    d.onclick=()=>{
+      cards.querySelectorAll('.card').forEach(c=>c.style.outline='');
+      d.style.outline='3px solid #ffd700';
+      $('trap-yes-btn').setAttribute('data-tidx',ti);
+    };
+    cards.appendChild(wrap);
+  }
+  const firstCard=cards.querySelector('.card');
+  if(firstCard){
+    firstCard.style.outline='3px solid #ffd700';
+    $('trap-yes-btn').setAttribute('data-tidx',tIdxs[0]);
+  }
+  $('trap-panel-title').textContent=title;
+  $('trap-panel').style.display='block';
+  trapCallback=(activated,ti)=>{
+    if(!activated){if(onDecline)onDecline();return;}
+    onActivate(ti);
+  };
+  setInstr(instrText);
+}
+
+function hideTrapPanel(){$('trap-panel').style.display='none';}
+
+function trapChoice(activate){
+  const cb=trapCallback;trapCallback=null;hideTrapPanel();
+  if(!activate){
+    log('sy','プレイヤーはトラップを発動しなかった');
+    if(cb)cb(false,-1);
+    return;
+  }
+  const ti=parseInt($('trap-yes-btn').getAttribute('data-tidx')||'0');
+  if(cb)cb(true,ti);
+}
+
+// ===== BATTLE TRAP =====
+function checkTrap(trapOwner,atkWho,atkIdx){
+  return new Promise(async resolve=>{
+    const p=G[trapOwner];
+    const attacker=G[atkWho].mons[atkIdx];
+    if(!attacker){resolve(false);return;}
+    if(attacker.value===8){
+      await showEffectNotice('🛡 '+cdesc(attacker)+'の効果！<br><span style="color:#ffcc88">トラップ発動を無効化！</span>');
+      log('sy','8のモンスターはトラップ無効！');resolve(false);return;
+    }
+    const tIdxs=p.traps.map((t,i)=>t&&(t.faceDown||t.revealed)?i:-1).filter(i=>i>=0);
+    if(tIdxs.length===0){resolve(false);return;}
+    if(trapOwner==='cpu'){
+      const ti=tIdxs[0];
+      resolve(await executeBattleTrap('cpu',ti,atkWho,atkIdx));
+    }else{
+      showTrapPanel(
+        tIdxs,
+        '🛡 トラップを発動しますか？',
+        '🛡 CPUが攻撃！トラップを発動しますか？',
+        async(ti)=>resolve(await executeBattleTrap('player',ti,atkWho,atkIdx)),
+        ()=>resolve(false)
+      );
+    }
+  });
+}
+
+async function executeBattleTrap(trapOwner,trapIdx,atkWho,atkIdx){
+  const p=G[trapOwner];
+  const trap=p.traps[trapIdx];if(!trap)return false;
+  const attacker=G[atkWho].mons[atkIdx];
+  p.traps[trapIdx]=null;toGrave(trap);
+  showFX('trap');
+  await showClash(
+    (trapOwner==='player'?'プレイヤー':'CPU')+'のトラップ', cdesc(trap),
+    (atkWho==='player'?'プレイヤー':'CPU')+'の攻撃', attacker?cdesc(attacker):'?'
+  );
+  log('sp','🛡 '+(trapOwner==='player'?'プレイヤー':'CPU')+'のトラップ発動！ '+cdesc(trap));
+  if(!attacker)return true;
+  if(trap.value>=attacker.value){
+    // atkWho attacked → atkWho suffers flash if Ace is destroyed
+    destroyMon(atkWho,atkIdx,'トラップで破壊',atkWho);
+    log('sy','トラップが攻撃モンスターを破壊した！');
+  }else{
+    log('sy','トラップが攻撃を止めた！（'+cdesc(attacker)+' は生き残った）');
+  }
+  return true; // always stops the attack
+}
+
+// ===== MAGIC COUNTER TRAP =====
+// Valid counter trap: face-down, value >= magicValue
+function getMagicCounterTraps(who,magicValue){
+  return G[who].traps.map((t,i)=>t&&(t.faceDown||t.revealed)&&t.value>=magicValue?i:-1).filter(i=>i>=0);
+}
+
+async function executeMagicCounterTrap(who,trapIdx,magicCard){
+  const trap=G[who].traps[trapIdx];if(!trap)return false;
+  G[who].traps[trapIdx]=null;toGrave(trap);
+  showFX('trap');
+  await showClash(
+    (who==='player'?'プレイヤー':'CPU')+'のトラップ', cdesc(trap),
+    (who==='player'?'CPU':'プレイヤー')+'の魔法', cdesc(magicCard)
+  );
+  log('sp','🛡 '+(who==='player'?'プレイヤー':'CPU')+'のトラップ発動！ '+cdesc(trap)+' — 魔法の破壊効果を無効化！');
+  return true;
+}
+
+// Show trap panel for player to counter CPU magic
+function showMagicCounterPanel(tIdxs,magicCard){
+  return new Promise(resolve=>{
+    showTrapPanel(
+      tIdxs,
+      '🛡 魔法の破壊を防ぎますか？',
+      '🛡 CPUが魔法を使用！トラップで破壊を無効化できます',
+      (ti)=>resolve(executeMagicCounterTrap('player',ti,magicCard)),
+      ()=>resolve(false)
+    );
+  });
+}
+
+// ===== SUMMON / MAGIC / TRAP SET =====
+function doSummonCard(who,zoneIdx,card,mode){
+  const p=G[who];
+  const hi=p.hand.indexOf(card);if(hi<0)return;
+  p.hand.splice(hi,1);
+  p.mons[zoneIdx]={...card,mode,faceDown:mode==='defense',newSummon:true,usedAtk:false};
+  log(who==='player'?'pl':'cp',
+    (who==='player'?'プレイヤー':'CPU')+'が '+cdesc(card)+' を'+(mode==='attack'?'攻撃表示で召喚':'守備表示でセット'));
+  if(who==='player'){resetUI();render();}
+}
+
+function doSetTrapCard(who,zoneIdx,card){
+  const p=G[who];
+  const hi=p.hand.indexOf(card);if(hi<0)return;
+  p.hand.splice(hi,1);
+  p.traps[zoneIdx]={...card,faceDown:true,revealed:false};
+  log(who==='player'?'pl':'cp',(who==='player'?'プレイヤー':'CPU')+'がトラップをセット');
+  if(who==='player'){resetUI();render();}
+}
+
+async function doMagicCard(who,card,targetIdx){
+  const p=G[who];const opp=who==='player'?'cpu':'player';
+  const hi=p.hand.indexOf(card);if(hi>=0)p.hand.splice(hi,1);
+  toGrave(card);
+  showFX('magic');
+  log(who==='player'?'pl':'cp',cdesc(card)+' 発動！');
+
+  for(let i=0;i<5;i++){
+    if(G.over)break;
+    const m=G[opp].mons[i];
+    if(!m)continue;
+    const isTarget=targetIdx!==undefined?i===targetIdx:m.value<=card.value;
+    if(!isTarget)continue;
+
+    // Flip face-down
+    if(m.faceDown){m.faceDown=false;log('sy',cdesc(m)+' が表向きになった');render();}
+    if(m.value===11){
+      await showEffectNotice('✨ '+cdesc(m)+'の効果！<br><span style="color:#a5d6a7">魔法効果を無効化！</span>');
+      log('sy','11のモンスターは魔法を無効化！ 破壊されない');continue;
+    }
+    if(m.value>card.value){log('sy',cdesc(m)+' はATKが高く破壊できなかった（フリップのみ）');continue;}
+
+    // Check for magic counter trap
+    const ctrTraps=getMagicCounterTraps(opp,card.value);
+    if(ctrTraps.length>0){
+      let negated=false;
+      if(opp==='cpu'){
+        // CPU auto-activates if it has a valid counter trap
+        negated=await executeMagicCounterTrap('cpu',ctrTraps[0],card);
+        render();
+      }else{
+        // Player chooses
+        negated=await showMagicCounterPanel(ctrTraps,card);
+        render();
+      }
+      if(negated){log('sy','魔法の破壊効果が無効化された！');continue;}
+    }
+
+    await showClash(
+      (who==='player'?'プレイヤー':'CPU')+'の魔法', cdesc(card),
+      (opp==='player'?'プレイヤー':'CPU')+'のモンスター', cdesc(m)
+    );
+    destroyMon(opp,i,'魔法',who);
+  }
+  if(who==='player'){resetUI();render();}
+}
+
+// ===== UI =====
+function resetUI(){
+  UI={state:'idle',handIdx:-1,pendMode:'attack',pending:null,tribs:[],tribsNeed:0,atkIdx:-1};
+}
+function cancelUI(){resetUI();render();setInstr('手札のカードを左/右クリックで選択してください');}
+
+function clickHand(idx,defMode){
+  if(G.turn!=='player'||G.over||G.phase!=='main')return;
+  const c=G.player.hand[idx];if(!c)return;
+  if(UI.handIdx===idx&&c.type==='monster'){
+    UI.pendMode=UI.pendMode==='attack'?'defense':'attack';
+    render();
+    setInstr('カードを配置するゾーンをクリック（モード: '+(UI.pendMode==='attack'?'攻撃':'守備')+'）');
+    return;
+  }
+  UI.handIdx=idx;UI.pending=c;
+  UI.pendMode=defMode?'defense':'attack';
+  if(c.type==='monster'){
+    UI.state='zone_sel';
+    const need=tribN(c.value);
+    if(need>0){
+      const avail=G.player.mons.filter(m=>m&&!m.newSummon).length;
+      if(avail<need){
+        setInstr('生贄が足りない（必要:'+need+'体、利用可:'+avail+'体）');
+        UI.state='idle';UI.handIdx=-1;UI.pending=null;render();return;
+      }
+      UI.tribsNeed=need;UI.tribs=[];UI.state='tributing';
+      setInstr('生贄にするモンスターを'+need+'体クリックしてください（召喚直後は不可）');
+    }else{
+      setInstr('配置するモンスターゾーンをクリック（モード: '+(UI.pendMode==='attack'?'攻撃':'守備')+'）　再クリックでモード切替');
+    }
+  }else if(c.type==='magic'){
+    UI.state='magic_tgt';
+    setInstr('魔法発動: CPUのモンスターを選択（裏守備も可、ATK'+c.value+'以下なら破壊）');
+  }else if(c.type==='trap'){
+    UI.state='trap_sel';
+    setInstr('セットするトラップゾーンをクリック');
+  }else if(c.type==='joker'){
+    UI.state='hand_sel';
+    setInstr('ジョーカー選択中。バルス条件（自分トラップ2枚）を満たせばバルス発動可能');
+  }
+  render();
+}
+
+function clickPlMon(idx){
+  if(G.turn!=='player'||G.over)return;
+  const m=G.player.mons[idx];
+
+  // Main phase idle: toggle display mode
+  if(G.phase==='main'&&UI.state==='idle'){
+    if(!m)return;
+    const newMode=m.mode==='attack'?'defense':'attack';
+    m.mode=newMode;m.faceDown=false;
+    log('pl',cdesc(m)+' を'+(newMode==='attack'?'攻撃表示':'守備表示')+'に変更');
+    render();return;
+  }
+
+  if(UI.state==='tributing'){
+    if(!m)return;
+    if(m.newSummon){setInstr('召喚直後のモンスターは生贄にできません');return;}
+    const ai=UI.tribs.indexOf(idx);
+    if(ai>=0)UI.tribs.splice(ai,1);
+    else if(UI.tribs.length<UI.tribsNeed)UI.tribs.push(idx);
+    if(UI.tribs.length===UI.tribsNeed){
+      log('pl','生贄: '+UI.tribs.map(ti=>cdesc(G.player.mons[ti])).join('、'));
+      for(const ti of UI.tribs){toGrave(G.player.mons[ti]);G.player.mons[ti]=null;}
+      UI.tribs=[];UI.state='zone_sel';
+      setInstr('召喚するゾーンをクリック（モード: '+(UI.pendMode==='attack'?'攻撃':'守備')+'）');
+    }else{
+      setInstr('生贄: '+UI.tribs.length+'/'+UI.tribsNeed+'体選択中');
+    }
+    render();return;
+  }
+
+  if(G.phase==='battle'&&UI.state==='idle'){
+    if(!m){setInstr('モンスターがいません');return;}
+    if(m.mode==='defense'){setInstr('守備表示のモンスターは攻撃できません');return;}
+    if(m.usedAtk){setInstr('このモンスターはすでに攻撃済みです');return;}
+    if(m.newSummon){setInstr('召喚直後のモンスターは攻撃できません');return;}
+    UI.atkIdx=idx;UI.state='attacking';
+    setInstr('攻撃対象をクリック（CPUモンスター or CPUの空フィールド=ダイレクトアタック）');render();
+  }
+}
+
+function clickPlMonEmpty(idx){
+  if(G.turn!=='player'||G.over)return;
+  if(UI.state==='zone_sel'){
+    if(G.player.mons[idx]!==null){setInstr('そのゾーンは使用中');return;}
+    doSummonCard('player',idx,UI.pending,UI.pendMode);
+  }
+}
+
+function clickPlTrap(idx){
+  if(G.turn!=='player'||G.over)return;
+  if(UI.state==='trap_sel'){
+    if(G.player.traps[idx]!==null){setInstr('そのゾーンは使用中');return;}
+    doSetTrapCard('player',idx,UI.pending);
+  }
+}
+
+function clickCpuMon(idx){
+  if(G.turn!=='player'||G.over)return;
+  const m=G.cpu.mons[idx];
+
+  if(UI.state==='magic_tgt'){
+    if(!m)return;
+    // Face-down defense: allow target (will flip and check)
+    if(!m.faceDown&&m.value>UI.pending.value){
+      setInstr('ATKが'+m.value+'で魔法値('+UI.pending.value+')より大きい — 効かない');return;
+    }
+    doMagicCard('player',UI.pending,idx);return;
+  }
+
+  if(G.phase==='battle'&&UI.state==='attacking'){
+    if(!m)return;
+    (async()=>{
+      const stopped=await checkTrap('cpu','player',UI.atkIdx);
+      if(G.over)return;
+      const still=G.player.mons[UI.atkIdx];
+      if(!still){log('sy','攻撃モンスターが破壊されたため攻撃中止');resetUI();render();return;}
+      if(!stopped){await battle('player',UI.atkIdx,'cpu',idx);}
+      if(G.player.mons[UI.atkIdx])G.player.mons[UI.atkIdx].usedAtk=true;
+      resetUI();render();
+    })();
+  }
+}
+
+async function clickCpuField(){
+  if(G.turn!=='player'||G.over||G.phase!=='battle'||UI.state!=='attacking')return;
+  if(G.cpu.mons.some(m=>m)){setInstr('CPUのモンスターがいる — ダイレクトアタック不可');return;}
+  const attacker=G.player.mons[UI.atkIdx];if(!attacker)return;
+  const stopped=await checkTrap('cpu','player',UI.atkIdx);
+  if(G.over)return;
+  const still=G.player.mons[UI.atkIdx];
+  if(!still){resetUI();render();return;}
+  if(!stopped){
+    await showClash('プレイヤーのモンスター',cdesc(attacker),'CPU ライフ','LP '+G.cpu.lp);
+    log('pl',cdesc(attacker)+' がダイレクトアタック！');
+    showFX('atk');
+    damage('cpu',attacker.value);
+    if(G.player.mons[UI.atkIdx])G.player.mons[UI.atkIdx].usedAtk=true;
+  }
+  resetUI();render();
+}
+
+function goBattle(){
+  if(G.turn!=='player'||G.over||G.phase!=='main')return;
+  if(G.turnNum===1){setInstr('先行1ターン目は攻撃フェーズに移行できません');return;}
+  G.phase='battle';resetUI();
+  log('pl','バトルフェーズ開始');render();
+  setInstr('攻撃するモンスターをクリックしてください');
+}
+
+function doBals(){
+  if(G.turn!=='player'||G.over)return;
+  const ji=G.player.hand.findIndex(c=>c.type==='joker');
+  if(ji<0){setInstr('バルスにはジョーカーが必要');return;}
+  const ti=G.player.traps.map((t,i)=>t?i:-1).filter(i=>i>=0);
+  if(ti.length<2){setInstr('バルスには自分のトラップ2枚が必要');return;}
+  if(!confirm('バルスを発動しますか？\nジョーカー＋自分のトラップ2枚を廃棄\n→ CPUの全モンスター・トラップを破壊'))return;
+  log('sp','⚡⚡⚡  バ ル ス ！！！  ⚡⚡⚡');
+  showFX('magic');
+  toGrave(G.player.hand[ji]);G.player.hand.splice(ji,1);
+  for(let i=0;i<2;i++){const idx=G.player.traps.findIndex(t=>t!==null);if(idx>=0){toGrave(G.player.traps[idx]);G.player.traps[idx]=null;}}
+  let destroyed=0;
+  for(let i=0;i<5;i++){
+    if(G.cpu.mons[i]){log('sp','CPUの '+cdesc(G.cpu.mons[i])+' 消滅！');toGrave(G.cpu.mons[i]);G.cpu.mons[i]=null;destroyed++;}
+    if(G.cpu.traps[i]){toGrave(G.cpu.traps[i]);G.cpu.traps[i]=null;destroyed++;}
+  }
+  log('sp','CPUのモンスター・トラップ計'+destroyed+'枚が全滅！');
+  resetUI();render();
+}
+
+// ===== CPU AI =====
+function delay(ms){return new Promise(r=>setTimeout(r,ms));}
+
+async function cpuMain(){
+  if(G.over)return;
+  G.phase='main';log('cp','--- CPUのメインフェーズ ---');render();
+
+  while(true){
+    const ei=G.cpu.traps.findIndex(t=>t===null);if(ei<0)break;
+    const hi=G.cpu.hand.findIndex(c=>c.type==='trap');if(hi<0)break;
+    await delay(500);
+    log('cp','CPU がトラップをセット');
+    doSetTrapCard('cpu',ei,G.cpu.hand[hi]);render();
+  }
+
+  let summonLoop=true;
+  while(summonLoop){
+    summonLoop=false;
+    const ei=G.cpu.mons.findIndex(m=>m===null);
+    if(ei<0)break;
+    const mons=G.cpu.hand.map((c,i)=>c.type==='monster'?{c,i}:null).filter(x=>x);
+    mons.sort((a,b)=>b.c.value-a.c.value);
+    for(const {c} of mons){
+      const need=tribN(c.value);
+      const avail=G.cpu.mons.map((m,mi)=>m&&!m.newSummon?mi:-1).filter(mi=>mi>=0);
+      if(need>avail.length)continue;
+      await delay(600);
+      if(need>0){
+        log('cp','CPUが生贄召喚の準備');
+        for(let t=0;t<need;t++){
+          const ti=avail[t];
+          log('cp','CPU が '+cdesc(G.cpu.mons[ti])+' を生贄に');
+          toGrave(G.cpu.mons[ti]);G.cpu.mons[ti]=null;
+        }
+        await delay(300);
+      }
+      const ei2=G.cpu.mons.findIndex(m=>m===null);
+      const mode=c.value>=5?'attack':'defense';
+      doSummonCard('cpu',ei2,c,mode);render();
+      await delay(400);
+      summonLoop=true;break;
+    }
+  }
+
+  for(const c of G.cpu.hand.filter(c=>c.type==='magic')){
+    // 裏守備も含めて狙える（値が未知なので全裏守備をターゲット候補に）
+    const ti=G.player.mons.findIndex(m=>m&&(m.faceDown||(m.value<=c.value&&m.value!==11)));
+    if(ti>=0){
+      await delay(600);
+      log('cp','CPU が魔法カードを使用');
+      await doMagicCard('cpu',c,ti);render();break;
+    }
+  }
+
+  await delay(700);
+  if(!G.over)cpuBattle();
+}
+
+async function cpuBattle(){
+  if(G.over)return;
+  if(G.turnNum===2){
+    log('cp','先行1ターン目（CPU）は攻撃不可');
+    await delay(500);
+    if(!G.over)doEndTurn(false);
+    return;
+  }
+  G.phase='battle';log('cp','--- CPUのバトルフェーズ ---');render();
+  await delay(400);
+  for(let i=0;i<5;i++){
+    if(G.over)break;
+    const m=G.cpu.mons[i];
+    if(!m||m.mode==='defense'||m.usedAtk||m.newSummon)continue;
+    await delay(700);
+    log('cp','CPU: '+cdesc(m)+' が攻撃を宣言');
+    render();await delay(300);
+
+    const plMons=G.player.mons.map((pm,pi)=>pm?{pm,pi}:null).filter(x=>x);
+    if(plMons.length===0){
+      log('cp','CPUのダイレクトアタック！');
+      const ts=await checkTrap('player','cpu',i);
+      if(!G.over&&G.cpu.mons[i]&&!ts){
+        await showClash('CPUのモンスター',cdesc(m),'プレイヤー ライフ','LP '+G.player.lp);
+        showFX('atk');
+        damage('player',G.cpu.mons[i].value);
+        render();
+      }
+    }else{
+      const ts=await checkTrap('player','cpu',i);
+      if(G.over)break;
+      if(G.cpu.mons[i]&&!ts){
+        const atkTargets=plMons.filter(x=>x.pm.mode==='attack');
+        let target;
+        if(atkTargets.length>0){atkTargets.sort((a,b)=>a.pm.value-b.pm.value);target=atkTargets[0];}
+        else{plMons.sort((a,b)=>a.pm.value-b.pm.value);target=plMons[0];}
+        await battle('cpu',i,'player',target.pi);
+        render();
+      }
+    }
+    if(G.cpu.mons[i])G.cpu.mons[i].usedAtk=true;
+    render();await delay(200);
+  }
+  await delay(500);
+  if(!G.over)doEndTurn(false);
+}
+
+function canBals(){
+  if(!G||G.turn!=='player'||G.over)return false;
+  return G.player.hand.some(c=>c.type==='joker')&&G.player.traps.filter(t=>t).length>=2;
+}
+
+// ===== RENDER =====
+function render(){
+  if(!G)return;
+  $('pl-lp').textContent=G.player.lp;$('cpu-lp').textContent=G.cpu.lp;
+  $('pl-toshio').textContent=G.player.toshio;$('cpu-toshio').textContent=G.cpu.toshio;
+  $('pl-skip').textContent=G.player.skip;$('cpu-skip').textContent=G.cpu.skip;
+  $('cpu-hc').textContent=G.cpu.hand.length;
+  $('deck-cnt').textContent=G.deck.length;$('grave-cnt').textContent=G.grave.length;
+  $('turn-ind').textContent=G.turn==='player'?'プレイヤー':'CPU';
+  $('phase-txt').textContent={draw:'ドロー',main:'メイン',battle:'バトル',end:'エンド'}[G.phase]||'-';
+  renderCpuHand();renderPlHand();
+  renderMons('cpu','cpu-mzone');renderMons('player','pl-mzone');
+  renderTraps('cpu','cpu-tzone');renderTraps('player','pl-tzone');
+  updateBtns();
+}
+
+function $(id){return document.getElementById(id);}
+
+function renderCpuHand(){
+  const a=$('cpu-hand-area');a.innerHTML='';
+  for(let i=0;i<G.cpu.hand.length;i++){const d=document.createElement('div');d.className='cback';a.appendChild(d);}
+}
+
+function renderPlHand(){
+  const a=$('player-hand-area');a.innerHTML='';
+  G.player.hand.forEach((c,i)=>{
+    const d=mkCardEl(c,false);
+    const isSel=UI.handIdx===i;
+    if(isSel&&UI.pendMode==='attack')d.classList.add('sel-atk');
+    if(isSel&&UI.pendMode==='defense')d.classList.add('sel-def');
+    if(isSel&&c.type==='monster'){
+      const mb=document.createElement('div');
+      mb.className='mode-badge '+(UI.pendMode==='attack'?'mode-atk':'mode-def');
+      mb.textContent=UI.pendMode==='attack'?'攻撃':'守備';
+      d.appendChild(mb);
+    }
+    d.onclick=e=>{e.preventDefault();clickHand(i,false);};
+    d.oncontextmenu=e=>{e.preventDefault();clickHand(i,true);};
+    a.appendChild(d);
+  });
+}
+
+function renderMons(who,zid){
+  const area=$(zid);
+  const label=area.querySelector('.row-label');
+  area.innerHTML='';if(label)area.appendChild(label);
+
+  const cpuNoMons=who==='cpu'&&!G.cpu.mons.some(m=>m);
+  if(cpuNoMons&&G.phase==='battle'&&UI.state==='attacking'){
+    area.classList.add('direct-target');
+    area.onclick=()=>clickCpuField();
+  }else{area.classList.remove('direct-target');area.onclick=null;}
+
+  for(let i=0;i<5;i++){
+    const z=document.createElement('div');z.className='czone mzone';
+    const m=G[who].mons[i];
+    if(m){
+      const isCpuDef=who==='cpu'&&m.mode==='defense';
+      const fd=m.faceDown&&isCpuDef;
+      const wrap=document.createElement('div');wrap.className='zone-card-wrap';
+      const d=mkCardEl(m,fd);
+      if(m.mode==='defense')d.classList.add('defm');
+      if(who==='player'){
+        if(UI.tribs.includes(i))d.classList.add('trib-sel');
+        if(UI.state==='attacking'&&UI.atkIdx===i){
+          d.classList.add('atk-sel');
+          const kl=document.createElement('div');
+          kl.className='kouki-label';
+          kl.textContent='⚔ こうげき';
+          wrap.appendChild(kl);
+        }
+        d.onclick=()=>clickPlMon(i);
+      }else{
+        if(UI.state==='magic_tgt'){
+          if(fd||(m.value<=UI.pending?.value&&m.value!==11))d.classList.add('magic-tgt');
+        }
+        if(UI.state==='attacking')d.classList.add('magic-tgt');
+        d.onclick=()=>clickCpuMon(i);
+      }
+      if(!fd){
+        const b=document.createElement('div');b.className='atkbadge';
+        b.textContent=(m.mode==='defense'?'DEF ':'ATK ')+m.value;
+        wrap.appendChild(d);wrap.appendChild(b);
+        z.appendChild(wrap);
+      }else{
+        wrap.appendChild(d);
+        z.appendChild(wrap);
+      }
+    }else{
+      if(who==='player'&&UI.state==='zone_sel'){z.classList.add('clickable');z.onclick=()=>clickPlMonEmpty(i);}
+    }
+    area.appendChild(z);
+  }
+}
+
+function renderTraps(who,zid){
+  const area=$(zid);
+  const label=area.querySelector('.row-label');
+  area.innerHTML='';if(label)area.appendChild(label);
+  for(let i=0;i<5;i++){
+    const z=document.createElement('div');z.className='czone tzone';
+    const t=G[who].traps[i];
+    if(t){
+      const fd=t.faceDown&&!t.revealed;
+      const d=mkCardEl(t,fd);z.appendChild(d);
+    }else{
+      if(who==='player'&&UI.state==='trap_sel'){z.classList.add('clickable');z.onclick=()=>clickPlTrap(i);}
+    }
+    area.appendChild(z);
+  }
+}
+
+function mkCardEl(c,faceDown){
+  const d=document.createElement('div');
+  if(faceDown){d.className='card fd';return d;}
+  d.className='card fu '+(c.suit||'');
+  if(c.type==='joker'){
+    d.innerHTML='<span class="cv">★</span><span class="cs">🃏</span><span class="cvb">★</span>';
+    const l=el('span','tlabel ljk','JKR');d.appendChild(l);
+    const ef=el('div','ceff','⚡バルス用');d.appendChild(ef);
+    return d;
+  }
+  const sym=SYM[c.suit]||'?',val=vn(c.value);
+  d.innerHTML=`<span class="cv">${val}</span><span class="cs">${sym}</span><span class="cvb">${val}</span>`;
+  const lm={monster:['MON','lm'],magic:['MAG','lmag'],trap:['TRP','ltr']};
+  if(lm[c.type]){const l=el('span','tlabel '+lm[c.type][1],lm[c.type][0]);d.appendChild(l);}
+  if(c.type==='monster'&&MON_EFFECTS[c.value]){
+    const ef=el('div','ceff',MON_EFFECTS[c.value].short);
+    ef.title=MON_EFFECTS[c.value].desc;
+    d.appendChild(ef);
+  }
+  return d;
+}
+
+function el(tag,cls,txt){const e=document.createElement(tag);e.className=cls;if(txt!==undefined)e.textContent=txt;return e;}
+
+function updateBtns(){
+  if(!G)return;
+  const ipl=G.turn==='player'&&!G.over;
+  const set=(id,en)=>{const b=$(id);if(b)b.disabled=!en;};
+  set('b-battle',ipl&&G.phase==='main'&&UI.state==='idle');
+  set('b-bals',canBals());
+  set('b-end',ipl&&(G.phase==='main'||G.phase==='battle')&&UI.state==='idle');
+  set('b-cancel',UI.state!=='idle');
+}
+
+function setInstr(msg){$('instr').textContent=msg;}
+function log(type,msg){
+  const a=$('game-log');
+  const e=el('div','le l'+type,'');e.textContent=msg;
+  a.insertBefore(e,a.firstChild);
+  while(a.children.length>50)a.removeChild(a.lastChild);
+}
+function clearLog(){$('game-log').innerHTML='';}
+
+log('sy','ゲーム開始ボタンをクリックしてください');
+</script>
+</body>
+</html>
