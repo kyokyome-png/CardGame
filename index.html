@@ -123,6 +123,35 @@ h1{text-align:center;font-size:21px;color:#ffd700;text-shadow:0 0 18px rgba(255,
 
 .zone-card-wrap{position:relative;display:flex;align-items:center;justify-content:center;margin-bottom:20px}
 
+@media(max-width:480px){
+  h1{font-size:15px;letter-spacing:1px;padding:5px}
+  .info-bar{font-size:11px;padding:5px 8px;gap:4px}
+  .lp{font-size:17px}
+  .card{width:52px;height:76px;padding:3px 2px;border-radius:6px}
+  .cv,.cvb{font-size:10px}
+  .cs{font-size:16px}
+  .ceff{font-size:5px}
+  .tlabel{font-size:7px}
+  .mode-badge{font-size:8px}
+  .czone{width:56px;height:82px;border-radius:7px}
+  .field-row{gap:3px;padding:3px 4px;min-height:90px}
+  .atkbadge{font-size:7px;padding:1px 3px;bottom:-16px}
+  .kouki-label{font-size:9px;top:-20px;padding:2px 5px}
+  .cback{width:24px;height:36px}
+  #cpu-hand-area{gap:2px}
+  #player-hand-area{gap:3px;padding:6px 4px;min-height:90px}
+  #hand-hint{font-size:10px}
+  .btn{padding:5px 8px;font-size:11px}
+  #action-panel{gap:4px;padding:5px}
+  #game-log{height:80px;font-size:10px}
+  .divider{font-size:11px}
+  #instr{font-size:11px}
+  .clash-box{gap:12px;padding:10px 14px}
+  .clash-cn{font-size:13px}
+  .clash-side{font-size:11px;max-width:100px}
+  .clash-vs{font-size:20px}
+}
+
 #clash-overlay{position:fixed;inset:0;display:none;align-items:center;justify-content:center;z-index:350;pointer-events:none}
 .clash-box{background:linear-gradient(135deg,rgba(5,5,25,.96),rgba(15,15,45,.96));border:2px solid #ffd700;border-radius:14px;padding:14px 24px;display:flex;align-items:center;gap:20px;box-shadow:0 0 40px rgba(255,215,0,.35);animation:clashPop .22s ease-out}
 @keyframes clashPop{from{transform:scale(.5);opacity:0}to{transform:scale(1);opacity:1}}
@@ -162,7 +191,7 @@ h1{text-align:center;font-size:21px;color:#ffd700;text-shadow:0 0 18px rgba(255,
 </div>
 
 <div id="player-hand-area"></div>
-<div id="hand-hint">← 左クリック: 攻撃表示 で選択 ／ 右クリック: 守備表示 で選択 → ゾーンをクリックして配置　※メインフェーズ中にフィールドのモンスターをクリックで表示変更</div>
+<div id="hand-hint">タップ: 攻撃表示で選択 ／ 同じカードを再タップ: 守備表示に切替 → ゾーンをタップして配置　※右クリックでも守備選択可　※フィールドのモンスターをタップで表示変更</div>
 
 <div class="info-bar">
   <span>プレイヤー ライフ: <span class="lp" id="pl-lp">40</span></span>
