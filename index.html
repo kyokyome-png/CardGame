@@ -395,6 +395,7 @@ function mkDeck(){
 function shuffle(a){const b=[...a];for(let i=b.length-1;i>0;i--){const j=0|Math.random()*(i+1);[b[i],b[j]]=[b[j],b[i]];}return b;}
 
 function initGame(){
+  if(G&&!G.over&&!confirm('ゲームを中断してリセットしますか？'))return;
   $('overlay').classList.remove('show');
   hideTrapPanel();
   // clash中のPromiseを強制解決してフリーズを防ぐ
@@ -964,6 +965,7 @@ async function cpuMain(){
         log('cp','CPUが生贄召喚の準備');
         for(let t=0;t<need;t++){
           const ti=avail[t];
+          if(!G.cpu.mons[ti])continue;
           log('cp','CPU が '+cdesc(G.cpu.mons[ti])+' を生贄に');
           toGrave(G.cpu.mons[ti]);G.cpu.mons[ti]=null;
         }
