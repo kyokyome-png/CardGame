@@ -9,16 +9,16 @@
 body{background:radial-gradient(ellipse at center,#0a1f0a,#030803);color:#e8e8e8;font-family:'Segoe UI',Arial,sans-serif;min-height:100vh;overflow-x:hidden}
 body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(255,215,0,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(255,215,0,.025) 1px,transparent 1px);background-size:44px 44px;pointer-events:none;z-index:0}
 #wrap{max-width:940px;margin:0 auto;padding:8px;position:relative;z-index:1}
-h1{text-align:center;font-size:21px;color:#ffd700;text-shadow:0 0 18px rgba(255,215,0,.55),0 0 40px rgba(255,215,0,.2);padding:7px;letter-spacing:3px}
+h1{text-align:center;font-size:18px;color:#ffd700;text-shadow:0 0 18px rgba(255,215,0,.55),0 0 40px rgba(255,215,0,.2);padding:3px;letter-spacing:3px}
 
-.info-bar{display:flex;justify-content:space-around;align-items:center;padding:7px 12px;background:linear-gradient(135deg,rgba(0,0,0,.8),rgba(8,16,36,.8));border-radius:10px;margin:4px 0;border:1px solid rgba(255,215,0,.22);font-size:13px;flex-wrap:wrap;gap:6px;box-shadow:0 2px 10px rgba(0,0,0,.5),inset 0 1px 0 rgba(255,255,255,.04)}
+.info-bar{display:flex;justify-content:space-around;align-items:center;padding:4px 10px;background:linear-gradient(135deg,rgba(0,0,0,.8),rgba(8,16,36,.8));border-radius:10px;margin:2px 0;border:1px solid rgba(255,215,0,.22);font-size:13px;flex-wrap:wrap;gap:5px;box-shadow:0 2px 10px rgba(0,0,0,.5),inset 0 1px 0 rgba(255,255,255,.04)}
 .lp{font-size:21px;font-weight:bold;color:#4fc3f7;text-shadow:0 0 10px rgba(79,195,247,.35)}
 .toshio-cnt{color:#ff7043;font-weight:bold}
 
-.field-row{display:flex;gap:6px;justify-content:center;align-items:center;padding:5px 6px;min-height:120px}
+.field-row{display:flex;gap:6px;justify-content:center;align-items:center;padding:3px 5px;min-height:106px}
 .row-label{writing-mode:vertical-rl;font-size:10px;color:rgba(255,255,255,.22);letter-spacing:2px;padding:0 2px;flex-shrink:0}
 
-.czone{width:78px;height:110px;border:2px dashed rgba(255,255,255,.1);border-radius:10px;display:flex;align-items:center;justify-content:center;position:relative;flex-shrink:0;transition:all .22s}
+.czone{width:78px;height:100px;border:2px dashed rgba(255,255,255,.1);border-radius:10px;display:flex;align-items:center;justify-content:center;position:relative;flex-shrink:0;transition:all .22s}
 .czone.mzone{border-color:rgba(80,160,80,.28);background:rgba(80,160,80,.04)}
 .czone.tzone{border-color:rgba(160,80,80,.22);background:rgba(160,80,80,.03)}
 .czone.clickable{cursor:pointer}
@@ -26,20 +26,22 @@ h1{text-align:center;font-size:21px;color:#ffd700;text-shadow:0 0 18px rgba(255,
 .czone.direct-target{border-color:#ff4444;box-shadow:0 0 22px rgba(255,50,50,.6),inset 0 0 10px rgba(255,50,50,.08);cursor:pointer;animation:pulseRed 1s infinite}
 @keyframes pulseRed{0%,100%{box-shadow:0 0 22px rgba(255,50,50,.6)}50%{box-shadow:0 0 38px rgba(255,50,50,.95)}}
 
-.card{width:74px;height:106px;border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:5px 4px;cursor:pointer;position:relative;user-select:none;transition:transform .15s,box-shadow .15s;flex-shrink:0}
+.card{width:74px;height:96px;border-radius:8px;display:flex;flex-direction:column;align-items:stretch;justify-content:space-between;padding:4px;cursor:pointer;position:relative;user-select:none;transition:transform .15s,box-shadow .15s;flex-shrink:0}
 .card.fu{background:linear-gradient(160deg,#fff,#f4f4ee)}
 .card.fu.hearts,.card.fu.spades{border:1.5px solid rgba(100,140,255,.38);box-shadow:0 2px 8px rgba(0,0,0,.38),inset 0 1px 0 rgba(255,255,255,.55)}
 .card.fu.clubs{border:1.5px solid rgba(100,220,140,.38);box-shadow:0 2px 8px rgba(0,0,0,.38),inset 0 1px 0 rgba(255,255,255,.55)}
 .card.fu.diamonds{border:1.5px solid rgba(255,160,80,.38);box-shadow:0 2px 8px rgba(0,0,0,.38),inset 0 1px 0 rgba(255,255,255,.55)}
 .card.fu.joker{border:1.5px solid rgba(200,100,255,.48);box-shadow:0 2px 8px rgba(0,0,0,.38),inset 0 1px 0 rgba(255,255,255,.55)}
-.card.fd{background:linear-gradient(135deg,#1a237e 0%,#311b92 30%,#4a148c 60%,#880e4f 100%);border:2px solid rgba(255,215,0,.58);justify-content:center;align-items:center;font-size:30px;box-shadow:0 3px 12px rgba(0,0,0,.6)}
-.card.fd::after{content:'🂠'}
-.card.hearts .cv,.card.hearts .cs,.card.hearts .cvb,.card.diamonds .cv,.card.diamonds .cs,.card.diamonds .cvb{color:#cc0000}
-.card.spades .cv,.card.spades .cs,.card.spades .cvb,.card.clubs .cv,.card.clubs .cs,.card.clubs .cvb{color:#111}
-.card.joker .cv,.card.joker .cs{color:#8800cc}
-.cv{font-size:14px;font-weight:bold;align-self:flex-start;line-height:1}
-.cs{font-size:25px;line-height:1}
-.cvb{font-size:14px;font-weight:bold;align-self:flex-end;transform:rotate(180deg);line-height:1}
+.card.fd{background:linear-gradient(135deg,#1a237e 0%,#311b92 30%,#4a148c 60%,#880e4f 100%);border:2px solid rgba(255,215,0,.58);box-shadow:0 3px 12px rgba(0,0,0,.6)}
+.card.fd::before{content:'';position:absolute;inset:5px;border:1px solid rgba(255,215,0,.32);border-radius:4px}
+.card.fd::after{content:'✦';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:24px;color:rgba(255,215,0,.65);text-shadow:0 0 12px rgba(255,215,0,.45)}
+.card-corner{display:flex;flex-direction:column;align-items:flex-start;line-height:1;gap:0;align-self:flex-start}
+.card-corner.bot{align-self:flex-end;transform:rotate(180deg)}
+.card.hearts .cv,.card.diamonds .cv,.card.hearts .cvs,.card.diamonds .cvs{color:#cc0000}
+.card.spades .cv,.card.clubs .cv,.card.spades .cvs,.card.clubs .cvs{color:#111}
+.card.joker .cv,.card.joker .cvs{color:#8800cc}
+.cv{font-size:13px;font-weight:bold;line-height:1}
+.cvs{font-size:10px;line-height:1}
 
 .card.fu:not(.defm):hover{transform:translateY(-5px);box-shadow:0 10px 22px rgba(0,0,0,.5)!important}
 .card.defm:hover{transform:rotate(90deg) translateY(-5px)}
@@ -54,26 +56,37 @@ h1{text-align:center;font-size:21px;color:#ffd700;text-shadow:0 0 18px rgba(255,
 .card.magic-tgt{box-shadow:0 0 0 3px #ff8800,0 0 18px rgba(255,136,0,.55)!important;animation:magicTgtPulse 1s ease-in-out infinite;cursor:pointer}
 @keyframes magicTgtPulse{0%,100%{box-shadow:0 0 0 3px #ff8800,0 0 18px rgba(255,136,0,.55)}50%{box-shadow:0 0 0 3px #ffaa44,0 0 32px rgba(255,136,0,.9)}}
 
-.tlabel{position:absolute;top:2px;right:2px;font-size:8px;padding:1px 3px;border-radius:2px;background:rgba(0,0,0,.6);font-weight:bold}
-.lm{color:#4fc3f7}.lmag{color:#a5d6a7}.ltr{color:#ef9a9a}.ljk{color:#ce93d8}
-.mode-badge{position:absolute;bottom:2px;left:50%;transform:translateX(-50%);font-size:9px;padding:1px 4px;border-radius:3px;white-space:nowrap;font-weight:bold}
+.card-art{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;border-radius:5px;margin:2px 0;gap:2px;overflow:hidden}
+.art-mon{background:linear-gradient(160deg,#e8eeff,#d4dcf8)}
+.art-mag{background:linear-gradient(160deg,#eaf8f0,#c4eddb)}
+.art-trp{background:linear-gradient(160deg,#fff1eb,#f8d8c0)}
+.art-jok{background:linear-gradient(160deg,#f8ebff,#e8c8f8)}
+.art-big{font-size:23px;line-height:1}
+.card.hearts .art-big,.card.diamonds .art-big{color:#cc0000}
+.card.spades .art-big,.card.clubs .art-big{color:#111}
+.card.joker .art-big{color:#8800cc}
+.art-info{font-size:6.5px;font-weight:bold;text-align:center;padding:0 3px;line-height:1.2;overflow:hidden;max-height:14px;width:100%}
+.art-mon .art-info{color:#334499}
+.art-mag .art-info{color:#1a6644}
+.art-trp .art-info{color:#883300}
+.art-jok .art-info{color:#6600aa}
+.mode-badge{position:absolute;bottom:2px;left:50%;transform:translateX(-50%);font-size:9px;padding:1px 4px;border-radius:3px;white-space:nowrap;font-weight:bold;z-index:2}
 .mode-atk{background:#1a3a8a;color:#88bbff}
 .mode-def{background:#1a5a1a;color:#88ff88}
 .atkbadge{position:absolute;bottom:-20px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.9);color:#ffd700;font-size:10px;padding:2px 6px;border-radius:4px;white-space:nowrap;pointer-events:none;z-index:5;border:1px solid rgba(255,215,0,.28)}
 .kouki-label{position:absolute;top:-26px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,#cc0000,#880000);color:#fff;font-size:11px;font-weight:bold;padding:3px 8px;border-radius:5px;white-space:nowrap;z-index:10;border:1px solid #ff6666;box-shadow:0 0 12px rgba(255,50,50,.5);animation:labelPop .25s ease-out}
 @keyframes labelPop{from{transform:translateX(-50%) scale(.6);opacity:0}to{transform:translateX(-50%) scale(1);opacity:1}}
-.ceff{position:absolute;bottom:17px;left:0;right:0;font-size:6px;text-align:center;line-height:1.2;padding:0 2px;pointer-events:none;font-weight:bold;color:rgba(60,60,180,.82)}
 
-#cpu-hand-area{display:flex;gap:4px;justify-content:center;padding:3px;min-height:44px}
+#cpu-hand-area{display:flex;gap:4px;justify-content:center;padding:2px;min-height:36px}
 .cback{width:34px;height:50px;border-radius:5px;background:linear-gradient(135deg,#1a237e,#4a148c,#880e4f);border:1px solid rgba(255,215,0,.45);flex-shrink:0;box-shadow:0 2px 6px rgba(0,0,0,.5)}
 
-.divider{text-align:center;padding:5px;background:linear-gradient(90deg,transparent,rgba(255,215,0,.07),transparent);border-top:1px solid rgba(255,215,0,.18);border-bottom:1px solid rgba(255,215,0,.18);font-size:12px;color:rgba(255,215,0,.65);margin:3px 0}
+.divider{text-align:center;padding:3px;background:linear-gradient(90deg,transparent,rgba(255,215,0,.07),transparent);border-top:1px solid rgba(255,215,0,.18);border-bottom:1px solid rgba(255,215,0,.18);font-size:12px;color:rgba(255,215,0,.65);margin:1px 0}
 
-#player-hand-area{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;min-height:120px;padding:10px 7px;background:linear-gradient(135deg,rgba(0,0,50,.5),rgba(0,0,80,.28));border-radius:10px;border:1px solid rgba(100,100,255,.22);margin:4px 0;position:relative;box-shadow:inset 0 2px 10px rgba(0,0,0,.4)}
-#hand-hint{font-size:11px;color:rgba(255,220,100,.62);text-align:center;padding:3px}
+#player-hand-area{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;min-height:106px;padding:6px 7px;background:linear-gradient(135deg,rgba(0,0,50,.5),rgba(0,0,80,.28));border-radius:10px;border:1px solid rgba(100,100,255,.22);margin:2px 0;position:relative;box-shadow:inset 0 2px 10px rgba(0,0,0,.4)}
+#hand-hint{font-size:10px;color:rgba(255,220,100,.62);text-align:center;padding:1px}
 
-#action-panel{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;padding:8px;background:linear-gradient(135deg,rgba(0,0,0,.5),rgba(8,8,18,.5));border-radius:10px;margin:4px 0;align-items:center;border:1px solid rgba(255,255,255,.04)}
-#start-panel{text-align:center;padding:8px 0 4px;border-top:1px solid rgba(255,215,0,.15);margin-top:4px}
+#action-panel{display:flex;flex-wrap:wrap;gap:5px;justify-content:center;padding:5px;background:linear-gradient(135deg,rgba(0,0,0,.5),rgba(8,8,18,.5));border-radius:10px;margin:2px 0;align-items:center;border:1px solid rgba(255,255,255,.04)}
+#start-panel{text-align:center;padding:4px 0 2px;border-top:1px solid rgba(255,215,0,.15);margin-top:2px}
 .btn{padding:7px 14px;border:none;border-radius:7px;cursor:pointer;font-size:12px;font-weight:bold;transition:all .15s;position:relative;overflow:hidden}
 .btn::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(255,255,255,.1),transparent);pointer-events:none}
 .btn:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 4px 14px rgba(0,0,0,.4)}
@@ -92,10 +105,10 @@ h1{text-align:center;font-size:21px;color:#ffd700;text-shadow:0 0 18px rgba(255,
 #trap-panel-cards{display:flex;gap:8px;justify-content:center;margin-bottom:12px;flex-wrap:wrap}
 #trap-panel-btns{display:flex;gap:8px;justify-content:center}
 
-#phase-ind{text-align:center;font-size:12px;color:rgba(255,255,255,.45);padding:3px}
-#instr{font-size:12px;color:#ffdd99;text-align:center;padding:4px 10px;background:linear-gradient(90deg,transparent,rgba(255,200,0,.07),transparent);border-radius:4px;margin:2px 0;min-height:22px}
+#phase-ind{text-align:center;font-size:11px;color:rgba(255,255,255,.45);padding:1px}
+#instr{font-size:12px;color:#ffdd99;text-align:center;padding:2px 10px;background:linear-gradient(90deg,transparent,rgba(255,200,0,.07),transparent);border-radius:4px;margin:1px 0;min-height:18px}
 
-#game-log{height:120px;overflow-y:auto;background:rgba(0,0,0,.68);padding:8px;border-radius:10px;font-size:11px;border:1px solid rgba(255,255,255,.07);margin-top:5px;box-shadow:inset 0 2px 8px rgba(0,0,0,.5)}
+#game-log{height:85px;overflow-y:auto;background:rgba(0,0,0,.68);padding:6px 8px;border-radius:10px;font-size:11px;border:1px solid rgba(255,255,255,.07);margin-top:3px;box-shadow:inset 0 2px 8px rgba(0,0,0,.5)}
 .le{padding:2px 0;border-bottom:1px solid rgba(255,255,255,.04)}
 .lpl{color:#4fc3f7}.lcp{color:#ef9a9a}.lsy{color:#a5d6a7}.lsp{color:#ffd700}
 
@@ -125,28 +138,29 @@ h1{text-align:center;font-size:21px;color:#ffd700;text-shadow:0 0 18px rgba(255,
 .zone-card-wrap{position:relative;display:flex;align-items:center;justify-content:center;margin-bottom:20px}
 
 @media(max-width:480px){
-  h1{font-size:15px;letter-spacing:1px;padding:5px}
-  .info-bar{font-size:11px;padding:5px 8px;gap:4px}
-  .lp{font-size:17px}
-  .card{width:52px;height:76px;padding:3px 2px;border-radius:6px}
-  .cv,.cvb{font-size:10px}
-  .cs{font-size:16px}
-  .ceff{font-size:5px}
-  .tlabel{font-size:7px}
-  .mode-badge{font-size:8px}
-  .czone{width:56px;height:82px;border-radius:7px}
-  .field-row{gap:3px;padding:3px 4px;min-height:90px}
+  h1{font-size:14px;letter-spacing:1px;padding:2px}
+  .info-bar{font-size:10px;padding:3px 7px;gap:3px}
+  .lp{font-size:15px}
+  .card{width:50px;height:72px;padding:3px;border-radius:6px}
+  .cv{font-size:9px}
+  .cvs{font-size:7px}
+  .art-big{font-size:16px}
+  .art-info{font-size:5px;max-height:10px}
+  .mode-badge{font-size:7px}
+  .czone{width:54px;height:76px;border-radius:7px}
+  .field-row{gap:3px;padding:2px 3px;min-height:82px}
   .atkbadge{font-size:7px;padding:1px 3px;bottom:-16px}
   .kouki-label{font-size:9px;top:-20px;padding:2px 5px}
-  .cback{width:24px;height:36px}
-  #cpu-hand-area{gap:2px}
-  #player-hand-area{gap:3px;padding:6px 4px;min-height:90px}
-  #hand-hint{font-size:10px}
-  .btn{padding:5px 8px;font-size:11px}
-  #action-panel{gap:4px;padding:5px}
-  #game-log{height:80px;font-size:10px}
-  .divider{font-size:11px}
-  #instr{font-size:11px}
+  .cback{width:22px;height:32px}
+  #cpu-hand-area{gap:2px;min-height:30px}
+  #player-hand-area{gap:3px;padding:4px;min-height:80px}
+  #hand-hint{font-size:9px;padding:0}
+  .btn{padding:4px 7px;font-size:10px}
+  #action-panel{gap:3px;padding:4px}
+  #game-log{height:60px;font-size:10px}
+  .divider{font-size:10px;padding:2px}
+  #instr{font-size:10px;min-height:16px}
+  #phase-ind{padding:0}
   .clash-box{gap:12px;padding:10px 14px}
   .clash-cn{font-size:13px}
   .clash-side{font-size:11px;max-width:100px}
@@ -163,6 +177,20 @@ h1{text-align:center;font-size:21px;color:#ffd700;text-shadow:0 0 18px rgba(255,
 .clash-notice{font-size:15px;font-weight:bold;text-align:center;padding:4px 8px;line-height:1.6}
 .clash-ok{margin-top:10px;padding:7px 28px;border:none;border-radius:8px;background:linear-gradient(135deg,#1565c0,#0d47a1);color:#fff;font-size:14px;font-weight:bold;cursor:pointer;box-shadow:0 2px 8px rgba(21,101,192,.4)}
 .clash-ok:active{opacity:.75}
+
+#rules-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:310;align-items:flex-start;justify-content:center;overflow-y:auto;padding:16px}
+#rules-overlay.show{display:flex}
+#rules-box{background:linear-gradient(135deg,#0d0d2e,#1a1a3e);border:2px solid #ffd700;border-radius:14px;padding:20px 22px 24px;max-width:480px;width:100%;box-shadow:0 0 50px rgba(255,215,0,.18);color:#e8e8e8;position:relative;margin:auto}
+#rules-box h2{color:#ffd700;font-size:17px;margin-bottom:14px;text-shadow:0 0 12px rgba(255,215,0,.4)}
+#rules-box h3{color:#88bbff;font-size:12px;font-weight:bold;margin:12px 0 5px;border-bottom:1px solid rgba(255,255,255,.1);padding-bottom:2px;letter-spacing:.5px}
+#rules-box ul{list-style:none;font-size:11.5px;line-height:1.9;color:rgba(255,255,255,.82);padding-left:4px}
+#rules-box ul li::before{content:'▸ ';color:#ffd700;font-size:10px}
+#rules-box .rtag{display:inline-block;padding:0 4px;border-radius:3px;font-size:10px;font-weight:bold;margin-right:3px}
+#rules-box .rtag-mon{background:#1a3a8a;color:#88bbff}
+#rules-box .rtag-mag{background:#1a5a1a;color:#88ff88}
+#rules-box .rtag-trp{background:#5a1a1a;color:#ff9999}
+#rules-box .rtag-jok{background:#4a1a8a;color:#cc99ff}
+.rules-close{position:absolute;top:12px;right:12px;padding:3px 10px;font-size:11px}
 </style>
 </head>
 <body>
@@ -211,7 +239,8 @@ h1{text-align:center;font-size:21px;color:#ffd700;text-shadow:0 0 18px rgba(255,
   <button class="btn bpu" id="b-bals" onclick="doBals()" disabled>⚡ バルス！</button>
   <button class="btn bgy" id="b-end" onclick="endTurn()" disabled>エンドだ</button>
   <button class="btn bgy" id="b-cancel" onclick="cancelUI()" disabled>キャンセル</button>
-  <button class="btn bte" id="b-clashmode" onclick="toggleClashMode()">演出: 自動</button>
+  <button class="btn bte" id="b-clashmode" onclick="toggleClashMode()">演出: 手動</button>
+  <button class="btn bgy" onclick="showRules()">？ ルール</button>
 </div>
 
 <div id="game-log"><div class="le lsy">ゲーム開始ボタンをクリックしてください</div></div>
@@ -239,6 +268,66 @@ h1{text-align:center;font-size:21px;color:#ffd700;text-shadow:0 0 18px rgba(255,
 </div>
 <div id="clash-overlay"></div>
 
+<div id="rules-overlay" onclick="hideRules()">
+  <div id="rules-box" onclick="event.stopPropagation()">
+    <button class="btn bgy rules-close" onclick="hideRules()">✕ 閉じる</button>
+    <h2>📖 ゲームルール</h2>
+
+    <h3>🃏 カードタイプ</h3>
+    <ul>
+      <li><span class="rtag rtag-mon">♥♠ MON</span>モンスター — ATK値で戦闘。攻撃/守備表示あり</li>
+      <li><span class="rtag rtag-mag">♣ MAG</span>魔法 — ATK≤カード値の相手モンスターを破壊</li>
+      <li><span class="rtag rtag-trp">♦ TRP</span>トラップ — 伏せて置き、相手の攻撃・魔法に対して発動</li>
+      <li><span class="rtag rtag-jok">★ JKR</span>ジョーカー — バルス発動に使用</li>
+    </ul>
+
+    <h3>⚔ 召喚・攻撃ルール</h3>
+    <ul>
+      <li>通常召喚は1ターンに1回のみ</li>
+      <li>ATK 8以上 → 生贄1体必要、ATK 11以上 → 生贄2体必要</li>
+      <li>先行1ターン目は攻撃不可（生贄召喚したモンスターは即攻撃可）</li>
+      <li>先行以外のターンは召喚直後でも攻撃可能</li>
+      <li>攻撃は各モンスター1ターン1回。トラップで止められたらそのターン攻撃不可</li>
+    </ul>
+
+    <h3>💥 バトル</h3>
+    <ul>
+      <li>攻撃側ATK ＞ 守備側ATK → 守備側破壊</li>
+      <li>守備側ATK ＞ 攻撃側ATK → 攻撃側破壊</li>
+      <li>同値 → 両方破壊</li>
+      <li>守備表示モンスターへの攻撃でATK負け → 攻撃側のみ破壊</li>
+      <li>相手フィールドにモンスターなし → ダイレクトアタック（LP直撃）</li>
+    </ul>
+
+    <h3>❤ ダメージ・ドロー</h3>
+    <ul>
+      <li>初期LP: 50</li>
+      <li>LPが0になったら敗北</li>
+      <li>LP が10減るごとに1枚ドロー（劣勢補填）</li>
+    </ul>
+
+    <h3>🛡 トラップ</h3>
+    <ul>
+      <li>相手攻撃・魔法時に手動で発動選択</li>
+      <li>バトル時: 攻撃モンスターを破壊し攻撃を無効化</li>
+      <li>魔法カウンター: 魔法の効果を無効化（魔法のATK以上のトラップが必要）</li>
+    </ul>
+
+    <h3>⚡ バルス</h3>
+    <ul>
+      <li>手札にジョーカー＋自分フィールドにトラップ2枚以上で発動可</li>
+      <li>相手のモンスター・トラップ全破壊</li>
+    </ul>
+
+    <h3>✨ モンスター特殊効果</h3>
+    <ul>
+      <li>A(1) としおフラッシュ: 破壊されると攻撃者の伏せカードを公開。3回でターンスキップ付与、累計9回で敗北</li>
+      <li>8 トラップ無効: このモンスターへの攻撃時にトラップを発動できない</li>
+      <li>J(11) 魔法無効: 魔法カードの効果を受けない</li>
+    </ul>
+  </div>
+</div>
+
 <script>
 const SUITS=['hearts','spades','clubs','diamonds'];
 const SYM={hearts:'♥',spades:'♠',clubs:'♣',diamonds:'♦',joker:'★'};
@@ -256,13 +345,15 @@ const MON_EFFECTS={
 let G=null;
 let UI={state:'idle',handIdx:-1,pendMode:'attack',pending:null,tribs:[],tribsNeed:0,atkIdx:-1,wasTribute:false};
 let trapCallback=null;
-let clashMode='auto'; // 'auto' | 'manual'
+let clashMode='manual'; // 'auto' | 'manual'
 let clashResolve=null;
 
 function toggleClashMode(){
   clashMode=clashMode==='auto'?'manual':'auto';
   $('b-clashmode').textContent=clashMode==='auto'?'演出: 自動':'演出: 手動';
 }
+function showRules(){$('rules-overlay').classList.add('show');}
+function hideRules(){$('rules-overlay').classList.remove('show');}
 function clashNext(){
   const ov=$('clash-overlay');
   ov.style.display='none';ov.classList.remove('active');
@@ -306,6 +397,10 @@ function shuffle(a){const b=[...a];for(let i=b.length-1;i>0;i--){const j=0|Math.
 function initGame(){
   $('overlay').classList.remove('show');
   hideTrapPanel();
+  // clash中のPromiseを強制解決してフリーズを防ぐ
+  const ov=$('clash-overlay');
+  ov.style.display='none';ov.classList.remove('active');
+  if(clashResolve){const r=clashResolve;clashResolve=null;r();}
   G={deck:shuffle(mkDeck()),grave:[],turn:'player',phase:'draw',player:mkPlayer(),cpu:mkPlayer(),over:false,turnNum:0};
   resetUI();
   for(let i=0;i<5;i++){drawTo('player');drawTo('cpu');}
@@ -398,11 +493,17 @@ function damage(who,amt){
   if(amt<=0)return;
   const lpEl=$(who==='player'?'pl-lp':'cpu-lp');
   const rect=lpEl.getBoundingClientRect();
+  const lpBefore=G[who].lp;
   G[who].lp=Math.max(0,G[who].lp-amt);
   log('sy',(who==='player'?'プレイヤー':'CPU')+'に '+amt+' ダメージ！ (残LP: '+G[who].lp+')');
   showFloat('-'+amt,'#ff4444',rect.left+rect.width/2,rect.top);
   const w=$('wrap');w.classList.remove('shaking');void w.offsetWidth;w.classList.add('shaking');
   setTimeout(()=>w.classList.remove('shaking'),400);
+  if(G[who].lp>0){
+    const draws=Math.floor(lpBefore/10)-Math.floor(G[who].lp/10);
+    for(let i=0;i<draws;i++){const drawn=drawTo(who);if(drawn)log(who==='player'?'pl':'cp',(who==='player'?'プレイヤー':'CPU')+'がダメージドロー: '+cdesc(drawn));}
+    if(draws>0)render();
+  }
   if(G[who].lp<=0)gameOver(who==='player'?'cpu':'player');
 }
 
@@ -424,6 +525,9 @@ function showFX(type){
 function gameOver(winner){
   if(G.over)return;G.over=true;
   hideTrapPanel();trapCallback=null;
+  const ov=$('clash-overlay');
+  ov.style.display='none';ov.classList.remove('active');
+  if(clashResolve){const r=clashResolve;clashResolve=null;r();}
   const pw=winner==='player';
   $('ot').textContent=pw?'🎉 プレイヤーの勝利！':'💀 CPUの勝利...';
   $('om').textContent=pw?'おめでとうございます！CPUに勝ちました！':'残念... もう一度挑戦しましょう！';
@@ -604,11 +708,11 @@ async function doMagicCard(who,card,targetIdx){
   showFX('magic');
   log(who==='player'?'pl':'cp',cdesc(card)+' 発動！');
 
-  // CPU魔法：対象宣言フェーズを表示
-  if(who==='cpu'&&targetIdx!==undefined){
+  // 魔法：対象宣言フェーズを表示
+  if(targetIdx!==undefined){
     const tm=G[opp].mons[targetIdx];
     const tname=tm?(tm.faceDown?'伏せモンスター':cdesc(tm)):'?';
-    await showClash('CPUの魔法',cdesc(card),'ターゲット',tname);
+    await showClash((who==='player'?'プレイヤー':'CPU')+'の魔法',cdesc(card),'ターゲット',tname);
   }
 
   for(let i=0;i<5;i++){
@@ -625,7 +729,7 @@ async function doMagicCard(who,card,targetIdx){
       log('sy','11のモンスターは魔法を無効化！ 破壊されない');continue;
     }
     if(m.value>card.value){
-      await showClash('CPUの魔法',cdesc(card),'ATK不足・破壊不可',cdesc(m));
+      await showClash((who==='player'?'プレイヤー':'CPU')+'の魔法',cdesc(card),'ATK不足・破壊不可',cdesc(m));
       log('sy',cdesc(m)+' はATKが高く破壊できなかった（フリップのみ）');continue;
     }
 
@@ -645,10 +749,12 @@ async function doMagicCard(who,card,targetIdx){
       if(negated){log('sy','魔法の破壊効果が無効化された！');continue;}
     }
 
-    await showClash(
-      (who==='player'?'プレイヤー':'CPU')+'の魔法', cdesc(card),
-      (opp==='player'?'プレイヤー':'CPU')+'のモンスター', cdesc(m)
-    );
+    if(targetIdx===undefined){
+      await showClash(
+        (who==='player'?'プレイヤー':'CPU')+'の魔法', cdesc(card),
+        (opp==='player'?'プレイヤー':'CPU')+'のモンスター', cdesc(m)
+      );
+    }
     destroyMon(opp,i,'魔法',who);
   }
   if(who==='player'){resetUI();render();}
@@ -900,8 +1006,6 @@ async function cpuBattle(){
     const m=G.cpu.mons[i];
     if(!m||m.mode==='defense'||m.usedAtk||m.newSummon)continue;
     await delay(700);
-    log('cp','CPU: '+cdesc(m)+' が攻撃を宣言');
-    render();await delay(300);
 
     const plMons=G.player.mons.map((pm,pi)=>pm?{pm,pi}:null).filter(x=>x);
     if(plMons.length===0){
@@ -1042,7 +1146,7 @@ function renderTraps(who,zid){
     const z=document.createElement('div');z.className='czone tzone';
     const t=G[who].traps[i];
     if(t){
-      const fd=t.faceDown&&!t.revealed;
+      const fd=who==='cpu'&&t.faceDown&&!t.revealed;
       const d=mkCardEl(t,fd);z.appendChild(d);
     }else{
       if(who==='player'&&UI.state==='trap_sel'){z.classList.add('clickable');z.onclick=()=>clickPlTrap(i);}
@@ -1054,22 +1158,20 @@ function renderTraps(who,zid){
 function mkCardEl(c,faceDown){
   const d=document.createElement('div');
   if(faceDown){d.className='card fd';return d;}
-  d.className='card fu '+(c.suit||'');
+  const corner=(v,s)=>`<div class="card-corner"><div class="cv">${v}</div><div class="cvs">${s}</div></div>`;
+  const cornerBot=(v,s)=>`<div class="card-corner bot"><div class="cv">${v}</div><div class="cvs">${s}</div></div>`;
   if(c.type==='joker'){
-    d.innerHTML='<span class="cv">★</span><span class="cs">🃏</span><span class="cvb">★</span>';
-    const l=el('span','tlabel ljk','JKR');d.appendChild(l);
-    const ef=el('div','ceff','⚡バルス用');d.appendChild(ef);
+    d.className='card fu joker';
+    d.innerHTML=corner('★','★')+`<div class="card-art art-jok"><div class="art-big">🃏</div><div class="art-info">JOKER</div></div>`+cornerBot('★','★');
     return d;
   }
   const sym=SYM[c.suit]||'?',val=vn(c.value);
-  d.innerHTML=`<span class="cv">${val}</span><span class="cs">${sym}</span><span class="cvb">${val}</span>`;
-  const lm={monster:['MON','lm'],magic:['MAG','lmag'],trap:['TRP','ltr']};
-  if(lm[c.type]){const l=el('span','tlabel '+lm[c.type][1],lm[c.type][0]);d.appendChild(l);}
-  if(c.type==='monster'&&MON_EFFECTS[c.value]){
-    const ef=el('div','ceff',MON_EFFECTS[c.value].short);
-    ef.title=MON_EFFECTS[c.value].desc;
-    d.appendChild(ef);
-  }
+  const artCls={monster:'art-mon',magic:'art-mag',trap:'art-trp'}[c.type]||'';
+  const ef=c.type==='monster'?MON_EFFECTS[c.value]:null;
+  const artInfo=ef?ef.short:(c.type==='monster'?`ATK · ${val}`:(c.type==='magic'?'MAGIC':'TRAP'));
+  d.className=`card fu ${c.suit||''}`;
+  d.innerHTML=corner(val,sym)+`<div class="card-art ${artCls}"><div class="art-big">${sym}</div><div class="art-info">${artInfo}</div></div>`+cornerBot(val,sym);
+  if(ef){const ai=d.querySelector('.art-info');if(ai)ai.title=ef.desc;}
   return d;
 }
 
