@@ -159,6 +159,8 @@ h1{text-align:center;font-size:21px;color:#ffd700;text-shadow:0 0 18px rgba(255,
 .clash-cn{font-size:15px;font-weight:bold;color:#ffd700;margin-top:3px}
 .clash-vs{color:#ff6644;font-size:26px;font-weight:bold;text-shadow:0 0 12px rgba(255,100,50,.7);flex-shrink:0}
 .clash-notice{font-size:15px;font-weight:bold;text-align:center;padding:4px 8px;line-height:1.6}
+.clash-ok{margin-top:10px;padding:7px 28px;border:none;border-radius:8px;background:linear-gradient(135deg,#1565c0,#0d47a1);color:#fff;font-size:14px;font-weight:bold;cursor:pointer;box-shadow:0 2px 8px rgba(21,101,192,.4)}
+.clash-ok:active{opacity:.75}
 </style>
 </head>
 <body>
@@ -207,6 +209,7 @@ h1{text-align:center;font-size:21px;color:#ffd700;text-shadow:0 0 18px rgba(255,
   <button class="btn bpu" id="b-bals" onclick="doBals()" disabled>⚡ バルス！</button>
   <button class="btn bgy" id="b-end" onclick="endTurn()" disabled>エンドだ</button>
   <button class="btn bgy" id="b-cancel" onclick="cancelUI()" disabled>キャンセル</button>
+  <button class="btn bte" id="b-clashmode" onclick="toggleClashMode()">⏱ 自動</button>
   <button class="btn bgr" id="b-start" onclick="initGame()">ゲーム開始</button>
 </div>
 
@@ -246,23 +249,39 @@ const MON_EFFECTS={
 };
 
 let G=null;
-let UI={state:'idle',handIdx:-1,pendMode:'attack',pending:null,tribs:[],tribsNeed:0,atkIdx:-1};
+let UI={state:'idle',handIdx:-1,pendMode:'attack',pending:null,tribs:[],tribsNeed:0,atkIdx:-1,wasTribute:false};
 let trapCallback=null;
+let clashMode='auto'; // 'auto' | 'manual'
+let clashResolve=null;
 
-function showClash(leftLabel,leftName,rightLabel,rightName,ms=1300){
+function toggleClashMode(){
+  clashMode=clashMode==='auto'?'manual':'auto';
+  $('b-clashmode').textContent=clashMode==='auto'?'⏱ 自動':'👆 手動';
+}
+function clashNext(){
+  $('clash-overlay').style.display='none';
+  const r=clashResolve;clashResolve=null;
+  if(r)r();
+}
+
+function showClash(leftLabel,leftName,rightLabel,rightName){
   return new Promise(resolve=>{
     const ov=$('clash-overlay');
-    ov.innerHTML=`<div class="clash-box"><div class="clash-side"><div>${leftLabel}</div><div class="clash-cn">${leftName}</div></div><div class="clash-vs">⚔</div><div class="clash-side"><div>${rightLabel}</div><div class="clash-cn">${rightName}</div></div></div>`;
+    const btn=clashMode==='manual'?'<button class="clash-ok" onclick="clashNext()">OK</button>':'';
+    ov.innerHTML=`<div class="clash-box" style="flex-direction:column;gap:14px"><div style="display:flex;align-items:center;gap:20px"><div class="clash-side"><div>${leftLabel}</div><div class="clash-cn">${leftName}</div></div><div class="clash-vs">⚔</div><div class="clash-side"><div>${rightLabel}</div><div class="clash-cn">${rightName}</div></div></div>${btn}</div>`;
     ov.style.display='flex';
-    setTimeout(()=>{ov.style.display='none';resolve();},ms);
+    if(clashMode==='manual'){clashResolve=resolve;}
+    else{setTimeout(()=>{ov.style.display='none';resolve();},1800);}
   });
 }
-function showEffectNotice(html,ms=1100){
+function showEffectNotice(html){
   return new Promise(resolve=>{
     const ov=$('clash-overlay');
-    ov.innerHTML=`<div class="clash-box"><div class="clash-notice">${html}</div></div>`;
+    const btn=clashMode==='manual'?'<button class="clash-ok" onclick="clashNext()">OK</button>':'';
+    ov.innerHTML=`<div class="clash-box" style="${btn?'flex-direction:column;gap:12px':''}"><div class="clash-notice">${html}</div>${btn}</div>`;
     ov.style.display='flex';
-    setTimeout(()=>{ov.style.display='none';resolve();},ms);
+    if(clashMode==='manual'){clashResolve=resolve;}
+    else{setTimeout(()=>{ov.style.display='none';resolve();},1400);}
   });
 }
 
@@ -552,13 +571,13 @@ function showMagicCounterPanel(tIdxs,magicCard){
 }
 
 // ===== SUMMON / MAGIC / TRAP SET =====
-function doSummonCard(who,zoneIdx,card,mode){
+function doSummonCard(who,zoneIdx,card,mode,tributeSummon=false){
   const p=G[who];
   const hi=p.hand.indexOf(card);if(hi<0)return;
   p.hand.splice(hi,1);
-  p.mons[zoneIdx]={...card,mode,faceDown:mode==='defense',newSummon:true,usedAtk:false};
+  p.mons[zoneIdx]={...card,mode,faceDown:mode==='defense',newSummon:!tributeSummon,usedAtk:false};
   log(who==='player'?'pl':'cp',
-    (who==='player'?'プレイヤー':'CPU')+'が '+cdesc(card)+' を'+(mode==='attack'?'攻撃表示で召喚':'守備表示でセット'));
+    (who==='player'?'プレイヤー':'CPU')+'が '+cdesc(card)+' を'+(mode==='attack'?'攻撃表示で召喚':'守備表示でセット')+(tributeSummon?' (生贄召喚・即攻撃可)':''));
   if(who==='player'){resetUI();render();}
 }
 
@@ -620,7 +639,7 @@ async function doMagicCard(who,card,targetIdx){
 
 // ===== UI =====
 function resetUI(){
-  UI={state:'idle',handIdx:-1,pendMode:'attack',pending:null,tribs:[],tribsNeed:0,atkIdx:-1};
+  UI={state:'idle',handIdx:-1,pendMode:'attack',pending:null,tribs:[],tribsNeed:0,atkIdx:-1,wasTribute:false};
 }
 function cancelUI(){resetUI();render();setInstr('手札のカードを左/右クリックで選択してください');}
 
@@ -684,7 +703,7 @@ function clickPlMon(idx){
     if(UI.tribs.length===UI.tribsNeed){
       log('pl','生贄: '+UI.tribs.map(ti=>cdesc(G.player.mons[ti])).join('、'));
       for(const ti of UI.tribs){toGrave(G.player.mons[ti]);G.player.mons[ti]=null;}
-      UI.tribs=[];UI.state='zone_sel';
+      UI.tribs=[];UI.wasTribute=true;UI.state='zone_sel';
       setInstr('召喚するゾーンをクリック（モード: '+(UI.pendMode==='attack'?'攻撃':'守備')+'）');
     }else{
       setInstr('生贄: '+UI.tribs.length+'/'+UI.tribsNeed+'体選択中');
@@ -706,7 +725,7 @@ function clickPlMonEmpty(idx){
   if(G.turn!=='player'||G.over)return;
   if(UI.state==='zone_sel'){
     if(G.player.mons[idx]!==null){setInstr('そのゾーンは使用中');return;}
-    doSummonCard('player',idx,UI.pending,UI.pendMode);
+    doSummonCard('player',idx,UI.pending,UI.pendMode,UI.wasTribute);
   }
 }
 
@@ -829,7 +848,7 @@ async function cpuMain(){
       }
       const ei2=G.cpu.mons.findIndex(m=>m===null);
       const mode=c.value>=5?'attack':'defense';
-      doSummonCard('cpu',ei2,c,mode);render();
+      doSummonCard('cpu',ei2,c,mode,need>0);render();
       await delay(400);
       summonLoop=true;break;
     }
