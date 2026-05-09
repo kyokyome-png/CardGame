@@ -397,7 +397,7 @@ function shuffle(a){const b=[...a];for(let i=b.length-1;i>0;i--){const j=0|Math.
 function initGame(){
   if(G&&!G.over&&!confirm('ゲームを中断してリセットしますか？'))return;
   $('overlay').classList.remove('show');
-  hideTrapPanel();
+  hideTrapPanel();trapCallback=null;
   // clash中のPromiseを強制解決してフリーズを防ぐ
   const ov=$('clash-overlay');
   ov.style.display='none';ov.classList.remove('active');
@@ -1007,21 +1007,12 @@ async function cpuBattle(){
     if(G.over)break;
     const m=G.cpu.mons[i];
     if(!m||m.mode==='defense'||m.usedAtk||m.newSummon)continue;
-    await delay(700);
 
+    // Compute target before delay so skippable monsters don't cause a visible pause
     const plMons=G.player.mons.map((pm,pi)=>pm?{pm,pi}:null).filter(x=>x);
-    if(plMons.length===0){
-      log('cp','CPU: '+cdesc(m)+' がダイレクトアタック宣言！');render();
-      const ts=await checkTrap('player','cpu',i,`🛡 CPU ${cdesc(m)} がダイレクトアタック！トラップを発動しますか？`);
-      if(!G.over&&G.cpu.mons[i]&&!ts){
-        await showClash('CPUのモンスター',cdesc(m),'プレイヤー ライフ','LP '+G.player.lp);
-        showFX('atk');
-        damage('player',G.cpu.mons[i].value);
-        render();
-      }
-    }else{
+    let target=null; // null = direct attack
+    if(plMons.length>0){
       const atkTargets=plMons.filter(x=>x.pm.mode==='attack');
-      let target;
       if(atkTargets.length>0){
         const beatable=atkTargets.filter(x=>m.value>=x.pm.value);
         if(beatable.length===0)continue;
@@ -1031,6 +1022,20 @@ async function cpuBattle(){
         if(beatable.length===0)continue;
         beatable.sort((a,b)=>a.pm.value-b.pm.value);target=beatable[0];
       }
+    }
+
+    await delay(700);
+
+    if(target===null){
+      log('cp','CPU: '+cdesc(m)+' がダイレクトアタック宣言！');render();
+      const ts=await checkTrap('player','cpu',i,`🛡 CPU ${cdesc(m)} がダイレクトアタック！トラップを発動しますか？`);
+      if(!G.over&&G.cpu.mons[i]&&!ts){
+        await showClash('CPUのモンスター',cdesc(m),'プレイヤー ライフ','LP '+G.player.lp);
+        showFX('atk');
+        damage('player',G.cpu.mons[i].value);
+        render();
+      }
+    }else{
       const tname=target.pm.faceDown?'伏せモンスター':cdesc(target.pm);
       log('cp','CPU: '+cdesc(m)+' が '+tname+' に攻撃宣言！');render();
       const ts=await checkTrap('player','cpu',i,`🛡 CPU ${cdesc(m)} が ${tname} に攻撃！トラップを発動しますか？`);
