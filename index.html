@@ -1022,8 +1022,15 @@ async function cpuBattle(){
     }else{
       const atkTargets=plMons.filter(x=>x.pm.mode==='attack');
       let target;
-      if(atkTargets.length>0){atkTargets.sort((a,b)=>a.pm.value-b.pm.value);target=atkTargets[0];}
-      else{plMons.sort((a,b)=>a.pm.value-b.pm.value);target=plMons[0];}
+      if(atkTargets.length>0){
+        const beatable=atkTargets.filter(x=>m.value>=x.pm.value);
+        if(beatable.length===0)continue;
+        beatable.sort((a,b)=>a.pm.value-b.pm.value);target=beatable[0];
+      }else{
+        const beatable=plMons.filter(x=>m.value>=x.pm.value);
+        if(beatable.length===0)continue;
+        beatable.sort((a,b)=>a.pm.value-b.pm.value);target=beatable[0];
+      }
       const tname=target.pm.faceDown?'伏せモンスター':cdesc(target.pm);
       log('cp','CPU: '+cdesc(m)+' が '+tname+' に攻撃宣言！');render();
       const ts=await checkTrap('player','cpu',i,`🛡 CPU ${cdesc(m)} が ${tname} に攻撃！トラップを発動しますか？`);
